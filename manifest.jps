@@ -19,9 +19,12 @@ application:
         required: true
 
   onInstall:
+    # 1. install magento
+    # 2. install consumer-api
     - install:
         jps: consumer-api/manifest.jps
         envName: shopozor-consumer-api
+    # 3. install consumer-frontend
     - install:
         jps: consumer-frontend/manifest.jps
         envName: shopozor-consumer-frontend
@@ -32,3 +35,4 @@ application:
           gitPassword: ${settings.gitPassword}
           apiHost: https://demo.vuestorefront.io
           localConfigFile: config/local.json
+    # 4. install mage2vuestorefront
