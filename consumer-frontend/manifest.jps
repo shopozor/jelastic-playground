@@ -22,13 +22,11 @@ application:
       - name: gitUser
         caption: User
         type: string
-        default: softozor-deployer
         required: true
       - name: gitPassword
         caption: Password
         type: string
         inputType: password
-        default: "s0ft050r"
         required: true
       - name: apiHost
         caption: API_HOST
