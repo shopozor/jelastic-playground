@@ -81,6 +81,7 @@ application:
           diskLimit: 50
 
   onInstall:
+    - log: ${settings.myparam}
     - deployRepo
     - setNodeIPInLocalConfigs
     - replaceApiHostInLocalConfigs

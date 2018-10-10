@@ -1,0 +1,14 @@
+jpsVersion: 1.3
+jpsType: install
+application:
+  id: shopozor-configuration
+  name: Shopozor
+  version: 0.0
+  baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master/
+
+  onInstall:
+    install:
+      jps: consumer-frontend/manifest.jps
+      envName: shopozor-consumer-frontend
+      settings:
+        myparam: test
