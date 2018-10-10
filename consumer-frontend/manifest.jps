@@ -81,7 +81,6 @@ application:
           diskLimit: 50
 
   onInstall:
-    - log: ${settings.gitUser}
     - deployRepo
     - setNodeIPInLocalConfigs
     - replaceApiHostInLocalConfigs

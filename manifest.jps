@@ -6,12 +6,26 @@ application:
   version: 0.0
   baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master/
 
+  settings:
+    fields:
+      - name: gitUser
+        caption: Git user
+        type: string
+        required: true
+      - name: gitPassword
+        caption: Git password
+        type: string
+        inputType: password
+        required: true
+
   onInstall:
     install:
       jps: consumer-frontend/manifest.jps
       envName: shopozor-consumer-frontend
       settings:
-        - presetGitRepo: https://bitbucket.org/softozor/shopozor-consumer-frontend
-        - presetGitBranch: master
-        - presetApiHost: https://demo.vuestorefront.io
-        - presetLocalConfigFile: config/local.json
+        gitRepo: https://bitbucket.org/softozor/shopozor-consumer-frontend
+        gitBranch: master
+        gitUser: ${settings.gitUser}
+        gitPassword: ${settings.gitPassword}
+        apiHost: https://demo.vuestorefront.io
+        localConfigFile: config/local.json
