@@ -57,7 +57,6 @@ application:
           cloudlets: 4
           env:
             DOCKER_EXPOSED_PORT: 22,80,443,3000
-          # this creates the /opt/shared-data folder on the nginx node from the /data folder of the storage
           volumeMounts:
             ${globals.pathToSharedData}:
               readOnly: false
