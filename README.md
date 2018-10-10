@@ -38,7 +38,7 @@ PACKAGE_MANAGER=yarn
 
 ## Software deployment
 
-![frontend2.PNG](/doc/images/frontend2.PNG)
+![frontend2.PNG](/doc/images/frontend2.png)
 
 Make sure that the github repository is updated in such a way that its package.json start script reads:
 
@@ -49,7 +49,7 @@ Make sure that the github repository is updated in such a way that its package.j
 
 Indeed, the original vue-storefront configuration starts 4 instances of the server on the same node which will be killed by jelastic as it overruns the above defined cloudlet performance.
 
-![frontend3.PNG](/images/frontend3.PNG)
+![frontend3.PNG](/images/frontend3.png)
 
 Use the [post-hook script](https://bitbucket.org/softozor/shopozor-jelastic-configuration/src/master/consumer-frontend/post-hook-template.sh), with appropriately filled placeholders, which will be stored under
 
@@ -60,26 +60,26 @@ Use the [post-hook script](https://bitbucket.org/softozor/shopozor-jelastic-conf
 ## Nginx configuration
 We need a reverse proxy server in front of our front-end application which we achieve with Nginx. First, the exposed ports need to be configured. To do that, just open the environment variables of Nginx
 
-![nginx-variables.PNG](/doc/images/nginx-variables.PNG)
+![nginx-variables.PNG](/doc/images/nginx-variables.png)
 
 Set the ports accordingly (you need port 3000 in there):
 
-![nginx-ports.PNG](//doc/images/nginx-ports.PNG)
+![nginx-ports.PNG](//doc/images/nginx-ports.png)
 
 and finally reboot the Nginx node.
 
 Alternatively, you can also open the settings panel
 
-![frontend4.PNG](/doc/images/frontend4.PNG)
+![frontend4.PNG](/doc/images/frontend4.png)
 
 Then edit the `nginx-jelastic.conf` file:
 
-![frontend5.PNG](/doc/images/frontend5.PNG)
+![frontend5.PNG](/doc/images/frontend5.png)
 
 In this file, add the listening port of the NodeJS server (3000) to all the locations where our nodes’ IP addresses are popping up (there should be two locations per node).
 Finally, reboot the nginx node:
 
-![frontend6.PNG](/doc/images/frontend6.PNG)
+![frontend6.PNG](/doc/images/frontend6.png)
 
 After the reboot is done, you can browse the address vue-storefront-demo.hidora.com.
 
@@ -91,11 +91,11 @@ In order for nginx to serve the static assets, you will need to
 - copy the assets on the shared storage under the location `/data/assets`
 - share the `/data` folder of the shared storage with the nginx node
 
-![storage2.PNG](/doc/images/storage2.PNG)
+![storage2.PNG](/doc/images/storage2.png)
 
-![storage3.PNG](/doc/images/storage3.PNG)
+![storage3.PNG](/doc/images/storage3.png)
 
-![storage4.PNG](/doc/images/storage4.PNG)
+![storage4.PNG](/doc/images/storage4.png)
 
 - add the exported data to the nginx locations: in the `nginx-jelastic.conf`, add
 
