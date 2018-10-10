@@ -49,7 +49,7 @@ Make sure that the github repository is updated in such a way that its package.j
 
 Indeed, the original vue-storefront configuration starts 4 instances of the server on the same node which will be killed by jelastic as it overruns the above defined cloudlet performance.
 
-![frontend3.PNG](/images/frontend3.png)
+![frontend3.PNG](/doc/images/frontend3.png)
 
 Use the [post-hook script](https://bitbucket.org/softozor/shopozor-jelastic-configuration/src/master/consumer-frontend/post-hook-template.sh), with appropriately filled placeholders, which will be stored under
 
@@ -64,7 +64,7 @@ We need a reverse proxy server in front of our front-end application which we ac
 
 Set the ports accordingly (you need port 3000 in there):
 
-![nginx-ports.PNG](//doc/images/nginx-ports.png)
+![nginx-ports.PNG](/doc/images/nginx-ports.png)
 
 and finally reboot the Nginx node.
 
