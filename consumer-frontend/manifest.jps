@@ -12,39 +12,39 @@ application:
     NODEJS_CONTEXT: ROOT
     NODEJS_PATH_TO_CONTEXT: ${globals.NODEJS_HOME}/${globals.NODEJS_CONTEXT}
 
-    settings:
-      fields:
-        - name: gitRepo
-          caption: Git Repo Url
-          type: string
-          default: https://bitbucket.org/softozor/shopozor-consumer-frontend
-          required: true
-          regex: "^https?:\\/\\/.+$"
-          regexText: Incorrect URL. HTTPS link to Git repository is required.
-        - name: gitBranch
-          caption: Branch
-          type: string
-          default: master
-          required: true
-        - name: gitUser
-          caption: User
-          type: string
-          required: true
-        - name: gitPassword
-          caption: Password
-          type: string
-          inputType: password
-          required: true
-        - name: apiHost
-          caption: API_HOST
-          type: string
-          default: https://demo.vuestorefront.io
-          required: true
-        - name: localConfigFile
-          caption: Config filename relative to context
-          type: string
-          default: config/local.json
-          required: true
+  settings:
+    fields:
+      - name: gitRepo
+        caption: Git Repo Url
+        type: string
+        default: https://bitbucket.org/softozor/shopozor-consumer-frontend
+        required: true
+        regex: "^https?:\\/\\/.+$"
+        regexText: Incorrect URL. HTTPS link to Git repository is required.
+      - name: gitBranch
+        caption: Branch
+        type: string
+        default: master
+        required: true
+      - name: gitUser
+        caption: User
+        type: string
+        required: true
+      - name: gitPassword
+        caption: Password
+        type: string
+        inputType: password
+        required: true
+      - name: apiHost
+        caption: API_HOST
+        type: string
+        default: https://demo.vuestorefront.io
+        required: true
+      - name: localConfigFile
+        caption: Config filename relative to context
+        type: string
+        default: config/local.json
+        required: true
 
   env:
     topology:
@@ -61,8 +61,8 @@ application:
           volumeMounts:
             ${globals.pathToSharedData}:
               readOnly: false
-              sourcePath: /data
-              sourceNodeGroup: storage
+              sourcePath: /home/jelastic/ROOT/src/themes/default
+              sourceNodeGroup: cp
           volumes: ${globals.pathToSharedData}
         - nodeGroup: cp
           nodeType: nodejs
@@ -73,20 +73,12 @@ application:
           env:
             PACKAGE_MANAGER: yarn
             PORT: 3000
-        - nodeGroup: storage
-          nodeType: storage
-          displayName: Shared storage
-          fixedCloudlets: 1
-          cloudlets: 6
-          diskLimit: 50
 
   onInstall:
     - deployRepo
     - setNodeIPInLocalConfigs
     - replaceApiHostInLocalConfigs
     - setupStaticAssetsServing
-    - downloadStaticAssetsOnSharedStorage
-    - removeStaticAssetsFromNodejsNodes
     - startApp
 
   actions:
@@ -125,19 +117,11 @@ application:
           replacements:
             - pattern: \#USERLOCATIONS
               replacement: "location /assets {
-                root ${globals.pathToSharedData}/assets/src/themes/default;
+                root ${globals.pathToSharedData};
               }"
         # was not able to make it work with nodeGroup: bl
         nodeType: nginx-dockerized
       - restartNodes [bl]
-    downloadStaticAssetsOnSharedStorage:
-      cmd:
-        - curl -fsSL ${baseUrl}/scripts/DownloadStaticAssets.sh | /bin/bash -s ${settings.gitRepo} ${settings.gitUser} ${settings.gitPassword}
-      nodeGroup: storage
-    removeStaticAssetsFromNodejsNodes:
-      cmd: 
-        - rm -Rf ${globals.NODEJS_PATH_TO_CONTEXT}/src/themes/default/assets
-      nodeGroup: cp
     startApp:
       cmd:
         - curl -fsSL ${baseUrl}/scripts/StartApp.sh | /bin/bash -s ${globals.NODEJS_PATH_TO_CONTEXT}
