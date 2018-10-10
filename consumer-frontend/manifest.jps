@@ -12,39 +12,39 @@ application:
     NODEJS_CONTEXT: ROOT
     NODEJS_PATH_TO_CONTEXT: ${globals.NODEJS_HOME}/${globals.NODEJS_CONTEXT}
 
-  settings:
-    fields:
-      - name: gitRepo
-        caption: Git Repo Url
-        type: string
-        default: ${settings.presetGitRepo} #https://bitbucket.org/softozor/shopozor-consumer-frontend
-        required: true
-        regex: "^https?:\\/\\/.+$"
-        regexText: Incorrect URL. HTTPS link to Git repository is required.
-      - name: gitBranch
-        caption: Branch
-        type: string
-        default: ${settings.presetGitBranch} #master
-        required: true
-      - name: gitUser
-        caption: User
-        type: string
-        required: true
-      - name: gitPassword
-        caption: Password
-        type: string
-        inputType: password
-        required: true
-      - name: apiHost
-        caption: API_HOST
-        type: string
-        default: ${settings.presetApiHost} #https://demo.vuestorefront.io
-        required: true
-      - name: localConfigFile
-        caption: Config filename relative to context
-        type: string
-        default: ${settings.presetLocalConfigFile} #config/local.json
-        required: true
+    settings:
+      fields:
+        - name: gitRepo
+          caption: Git Repo Url
+          type: string
+          default: https://bitbucket.org/softozor/shopozor-consumer-frontend
+          required: true
+          regex: "^https?:\\/\\/.+$"
+          regexText: Incorrect URL. HTTPS link to Git repository is required.
+        - name: gitBranch
+          caption: Branch
+          type: string
+          default: master
+          required: true
+        - name: gitUser
+          caption: User
+          type: string
+          required: true
+        - name: gitPassword
+          caption: Password
+          type: string
+          inputType: password
+          required: true
+        - name: apiHost
+          caption: API_HOST
+          type: string
+          default: https://demo.vuestorefront.io
+          required: true
+        - name: localConfigFile
+          caption: Config filename relative to context
+          type: string
+          default: config/local.json
+          required: true
 
   env:
     topology:
@@ -81,6 +81,7 @@ application:
           diskLimit: 50
 
   onInstall:
+    - log: ${settings.gitRepo}
     - deployRepo
     - setNodeIPInLocalConfigs
     - replaceApiHostInLocalConfigs
