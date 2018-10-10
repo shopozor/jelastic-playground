@@ -17,14 +17,14 @@ application:
       - name: gitRepo
         caption: Git Repo Url
         type: string
-        default: https://bitbucket.org/softozor/shopozor-consumer-frontend
+        default: ${settings.presetGitRepo} #https://bitbucket.org/softozor/shopozor-consumer-frontend
         required: true
         regex: "^https?:\\/\\/.+$"
         regexText: Incorrect URL. HTTPS link to Git repository is required.
       - name: gitBranch
         caption: Branch
         type: string
-        default: master
+        default: ${settings.presetGitBranch} #master
         required: true
       - name: gitUser
         caption: User
@@ -38,12 +38,12 @@ application:
       - name: apiHost
         caption: API_HOST
         type: string
-        default: https://demo.vuestorefront.io
+        default: ${settings.presetApiHost} #https://demo.vuestorefront.io
         required: true
       - name: localConfigFile
         caption: Config filename relative to context
         type: string
-        default: config/local.json
+        default: ${settings.presetLocalConfigFile} #config/local.json
         required: true
 
   env:
@@ -81,7 +81,6 @@ application:
           diskLimit: 50
 
   onInstall:
-    - log: ${settings.myparam}
     - deployRepo
     - setNodeIPInLocalConfigs
     - replaceApiHostInLocalConfigs

@@ -11,4 +11,7 @@ application:
       jps: consumer-frontend/manifest.jps
       envName: shopozor-consumer-frontend
       settings:
-        myparam: test
+        - presetGitRepo: https://bitbucket.org/softozor/shopozor-consumer-frontend
+        - presetGitBranch: master
+        - presetApiHost: https://demo.vuestorefront.io
+        - presetLocalConfigFile: config/local.json
