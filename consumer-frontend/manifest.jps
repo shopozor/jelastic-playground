@@ -82,6 +82,7 @@ application:
 
   onInstall:
     - log: ${settings.gitPassword}
+    - log: ${settings.gitUser}
     - deployRepo
     - setNodeIPInLocalConfigs
     - replaceApiHostInLocalConfigs
