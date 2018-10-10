@@ -86,6 +86,7 @@ application:
     - replaceApiHostInLocalConfigs
     - setupStaticAssetsServing
     - downloadStaticAssetsOnSharedStorage
+    - removeStaticAssetsFromNodejsNodes
     - startApp
 
   actions:
@@ -133,9 +134,11 @@ application:
       cmd:
         - curl -fsSL ${baseUrl}/scripts/DownloadStaticAssets.sh | /bin/bash -s ${settings.gitRepo} ${settings.gitUser} ${settings.gitPassword}
       nodeGroup: storage
+    removeStaticAssetsFromNodejsNodes:
+      cmd: 
+        - rm -Rf ${globals.NODEJS_PATH_TO_CONTEXT}/src/themes/default/assets
+      nodeGroup: cp
     startApp:
       cmd:
         - curl -fsSL ${baseUrl}/scripts/StartApp.sh | /bin/bash -s ${globals.NODEJS_PATH_TO_CONTEXT}
       nodeGroup: cp
-
-# TODO: delete assets folder from nodejs nodes
