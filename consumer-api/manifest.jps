@@ -14,7 +14,7 @@ application:
         fixedCloudlets: 1
         cloudlets: 4
         env:
-          "DOCKER_EXPOSED_PORT": "22,80,443,8080"
+          DOCKER_EXPOSED_PORT: 22,80,443,8080
       - nodeGroup: cp
         nodeType: nodejs
         displayName: Application servers
@@ -22,17 +22,17 @@ application:
         fixedCloudlets: 4
         cloudlets: 10
         env:
-          "PACKAGE_MANAGER": "yarn"
-          "PORT": "8080"
+          PACKAGE_MANAGER: yarn
+          PORT: 8080
       - nodeGroup: nosqldb
         nodeType: redis
         displayName: Redis database
         fixedCloudlets: 1
         cloudlets: 4
-      - nodeGroup: docker
-        nodeType: docker
-        fixedCloudlets: 1
-        cloudlets: 16
-        image: "elasticsearch"
-        env:
-          "ES_JAVA_OPTS": "-Xmx512m -Xms512m"
+      # - nodeGroup: docker
+      #   nodeType: docker
+      #   fixedCloudlets: 1
+      #   cloudlets: 16
+      #   image: elasticsearch
+      #   env:
+      #     ES_JAVA_OPTS: -Xmx512m -Xms512m
