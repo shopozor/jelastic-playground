@@ -24,6 +24,14 @@ application:
     - install:
         jps: consumer-api/manifest.jps
         envName: shopozor-consumer-api
+        settings:
+          gitRepo: https://bitbucket.org/softozor/shopozor-consumer-api
+          gitBranch: master
+          gitUser: ${settings.gitUser}
+          gitPassword: ${settings.gitPassword}
+          magentoHost: softozor-magento.hidora.com
+          # TODO: also set the magento access keys here!
+          localConfigFile: config/local.json
     # 3. install consumer-frontend
     - install:
         jps: consumer-frontend/manifest.jps

@@ -4,7 +4,7 @@ application:
   id: consumer-frontend
   name: Consumer frontend
   version: 0.0
-  baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master/consumer-frontend
+  baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master
 
   globals:
     pathToSharedData: /opt/shared-data
