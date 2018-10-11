@@ -8,7 +8,7 @@ application:
 
   globals:
     pathToSharedData: /opt/shared-data
-    NODEJS_HOME: /home/jelastic/
+    NODEJS_HOME: /home/jelastic
     NODEJS_CONTEXT: ROOT
     NODEJS_PATH_TO_CONTEXT: ${globals.NODEJS_HOME}/${globals.NODEJS_CONTEXT}
 

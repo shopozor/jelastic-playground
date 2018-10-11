@@ -7,7 +7,7 @@ application:
   baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master
 
   globals:
-    NODEJS_HOME: /home/jelastic/
+    NODEJS_HOME: /home/jelastic
     NODEJS_CONTEXT: ROOT
     NODEJS_PATH_TO_CONTEXT: ${globals.NODEJS_HOME}/${globals.NODEJS_CONTEXT}
     PATH_TO_IMAGEMAGICK: ${globals.NODEJS_HOME}/local
