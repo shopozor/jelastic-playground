@@ -17,3 +17,4 @@ cd ImageMagick-*
 ./configure --prefix=$PATH_TO_IMAGEMAGICK --enable-shared --enable-symbol-prefix
 make
 make install
+
