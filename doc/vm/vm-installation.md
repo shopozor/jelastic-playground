@@ -78,9 +78,7 @@ git clone https://github.com/DivanteLtd/mage2vuestorefront.git
 cd mage2vuestorefront/src
 npm install
 ```
-2. Configure the magento2 synchronization with vue-storefront-api:
-
-Make sure the following sections of vue-storefront-api/config/local.json contain the correct parameters:
+2. Configure the magento2 synchronization with vue-storefront-api: make sure the following sections of `vue-storefront-api/config/local.json` contain the correct parameters:
 ```
 "magento2": {
   "url": "http://local.magento", // <-- modify this
