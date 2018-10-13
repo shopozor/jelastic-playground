@@ -45,6 +45,22 @@ application:
         type: string
         default: config/local.json
         required: true
+      - name: consumerKey
+        caption: Magento CONSUMER_KEY
+        type: string
+        required: true
+      - name: consumerSecret
+        caption: Magento CONSUMER_SECRET
+        type: string
+        required: true
+      - name: accessToken
+        caption: Magento ACCESS_TOKEN
+        type: string
+        required: true
+      - name: accessTokenSecret
+        caption: Magento ACCESS_TOKEN_SECRET
+        type: string
+        required: true
 
   env:
     topology:
@@ -84,7 +100,7 @@ application:
     - deployRepo
     - setNodeIPInLocalConfigs
     - installImageMagick
-    - replaceHostsInLocalConfig
+    - replacePlaceholdersInLocalConfig
     - startApp
 
   actions:
@@ -114,7 +130,7 @@ application:
       cmd:
         - curl -fsSL ${baseUrl}/consumer-api/scripts/InstallImageMagick.sh | /bin/bash -s ${globals.PATH_TO_IMAGEMAGICK}
       nodeGroup: cp
-    replaceHostsInLocalConfig:
+    replacePlaceholdersInLocalConfig:
       replaceInFile:
         path: ${globals.NODEJS_PATH_TO_CONTEXT}/${settings.localConfigFile}
         replacements:
@@ -124,6 +140,14 @@ application:
             replacement: ${nodes.nosqldb.intIP}
           - pattern: ELASTICSEARCH_HOST
             replacement: ${nodes.docker.intIP}
+          - pattern: CONSUMER_KEY
+            replacement: ${settings.consumerKey}
+          - pattern: CONSUMER_SECRET
+            replacement: ${settings.consumerSecret}
+          - pattern: ACCESS_TOKEN
+            replacement: ${settings.accessToken}
+          - pattern: ACCESS_TOKEN_SECRET
+            replacement: ${settings.accessTokenSecret}
       nodeType: nodejs
     startApp:
       cmd:
