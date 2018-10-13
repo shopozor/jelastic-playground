@@ -52,7 +52,7 @@ Run
 docker exec -it docker-magento2_web_1 install-magento
 docker exec -it docker-magento2_web_1 install-sampledata
 ```
-The sampledata are coming from Magento2 example products dataset.
+The sampledata are coming from [Magento2 example products dataset](https://github.com/magento/magento2-sample-data).
 
 Then add new integration in the System -> Integrations in Magento2. I got the following tokens:
 * Consumer Key        : 2uqsdrt61n6v5l0d90gmssjx7oyj229v
@@ -72,7 +72,7 @@ to the .bashrc file (note the "/rest"!).
 
 ## Use mage2vuestorefront
 
-1. Follow the advice given in mage2vuestorefront github repo:
+1. Follow the advice given in [mage2vuestorefront github repo](https://github.com/DivanteLtd/mage2vuestorefront):
 ```
 git clone https://github.com/DivanteLtd/mage2vuestorefront.git
 cd mage2vuestorefront/src
