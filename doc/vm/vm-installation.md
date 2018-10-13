@@ -2,7 +2,7 @@
 
 ## Installing vuestorefront
 
-Follow the instructions from vue-storefront github repo:
+Follow the instructions from [vue-storefront github repo](https://github.com/DivanteLtd/vue-storefront/blob/master/doc/Installing%20on%20Linux%20and%20MacOS.md):
 ```
 git clone https://github.com/DivanteLtd/vue-storefront.git
 cd vue-storefront
