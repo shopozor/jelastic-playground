@@ -39,7 +39,7 @@ Then add
 ```
 127.0.0.1    local.magento
 ```
-to /etc/hosts.
+to `/etc/hosts`.
 
 Then set
 ```
