@@ -60,7 +60,7 @@ application:
           volumeMounts:
             ${globals.pathToSharedData}:
               readOnly: false
-              sourcePath: /home/jelastic/ROOT/src/themes/default
+              sourcePath: /data
               sourceNodeGroup: cp
           volumes: ${globals.pathToSharedData}
         - nodeGroup: cp
@@ -111,6 +111,11 @@ application:
             replacement: ${settings.apiHost}
       nodeType: nodejs
     setupStaticAssetsServing:
+      - cmd [cp]:
+          - mkdir /data 
+          - chown -R root:root /data 
+          - mv ${globals.NODEJS_PATH_TO_CONTEXT}/src/themes/default/assets /data/
+        user: root
       - replaceInFile:
           path: /etc/nginx/nginx-jelastic.conf
           replacements:
