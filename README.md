@@ -2,7 +2,7 @@
 
 ## Local installation in a virtual machine
 
-- [Installation in a virtual machine](/doc/vm/vm-installation.md)
+- [Installation of vue-storefront in a virtual machine](/doc/vm/vm-installation.md)
 
 ## Jelastic installation
 
