@@ -45,7 +45,7 @@ Then set
 ```
 MAGENTO_URL=http://local.magento
 ```
-in env file
+in `env` file.
 
 Finally run
 ```
