@@ -9,7 +9,7 @@ cd vue-storefront
 yarn
 yarn installer
 ```
-This is successful, contrary to the advice given in the medium article on vuestorefront:
+This is successful, contrary to the advice given in the [medium article on vuestorefront](https://medium.com/@piotrkarwatka/vue-storefront-how-to-install-and-integrate-with-magento2-227767dd65b2):
 ```
 cd vue-storefront
 yarn install
