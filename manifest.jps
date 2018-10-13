@@ -6,6 +6,10 @@ application:
   version: 0.0
   baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master/
 
+  globals:
+    consumerApiEnvName: shopozor-consumer-api
+    consumerApiHost: ${globals.consumerApiEnvName}.hidora.com
+
   settings:
     fields:
       - type: spacer
@@ -21,6 +25,12 @@ application:
         required: true
       - type: spacer
         caption: Magento
+      - name: magentoHost
+        caption: HOST
+        type: hostpicker
+        editable: true
+        default: softozor-magento.hidora.com
+        required: true
       - name: consumerKey
         caption: CONSUMER_KEY
         type: string
@@ -48,7 +58,7 @@ application:
           gitBranch: master
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
-          magentoHost: softozor-magento.hidora.com
+          magentoHost: ${settings.magentoHost}
           consumerKey: ${settings.consumerKey}
           consumerSecret: ${settings.consumerSecret}
           accessToken: ${settings.accessToken}
@@ -62,7 +72,7 @@ application:
           gitBranch: master
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
-          apiHost: https://demo.vuestorefront.io
+          apiHost: ${globals.consumerApiHost}
           localConfigFile: config/local.json
     # 4. install mage2vuestorefront
     # 5. install shopozor-management-api
