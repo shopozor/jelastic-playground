@@ -8,29 +8,33 @@ application:
 
   settings:
     fields:
+      - type: spacer
+        caption: Git
       - name: gitUser
-        caption: Git user
+        caption: User
         type: string
         required: true
       - name: gitPassword
-        caption: Git password
+        caption: Password
         type: string
         inputType: password
         required: true
+      - type: spacer
+        caption: Magento
       - name: consumerKey
-        caption: Magento CONSUMER_KEY
+        caption: CONSUMER_KEY
         type: string
         required: true
       - name: consumerSecret
-        caption: Magento CONSUMER_SECRET
+        caption: CONSUMER_SECRET
         type: string
         required: true
       - name: accessToken
-        caption: Magento ACCESS_TOKEN
+        caption: ACCESS_TOKEN
         type: string
         required: true
       - name: accessTokenSecret
-        caption: Magento ACCESS_TOKEN_SECRET
+        caption: ACCESS_TOKEN_SECRET
         type: string
         required: true
 
