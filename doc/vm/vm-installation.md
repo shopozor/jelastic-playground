@@ -1,4 +1,4 @@
-# Installation of vue-storefront in a VM
+# Development installation of vue-storefront in a VM
 
 ## Installing vuestorefront
 
