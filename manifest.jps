@@ -17,10 +17,25 @@ application:
         type: string
         inputType: password
         required: true
+      - name: consumerKey
+        caption: Magento CONSUMER_KEY
+        type: string
+        required: true
+      - name: consumerSecret
+        caption: Magento CONSUMER_SECRET
+        type: string
+        required: true
+      - name: accessToken
+        caption: Magento ACCESS_TOKEN
+        type: string
+        required: true
+      - name: accessTokenSecret
+        caption: Magento ACCESS_TOKEN_SECRET
+        type: string
+        required: true
 
   onInstall:
     # 1. install magento
-    # 2. install consumer-api
     - install:
         jps: consumer-api/manifest.jps
         envName: shopozor-consumer-api
@@ -30,9 +45,11 @@ application:
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
           magentoHost: softozor-magento.hidora.com
-          # TODO: also set the magento access keys here!
+          consumerKey: ${settings.consumerKey}
+          consumerSecret: ${settings.consumerSecret}
+          accessToken: ${settings.accessToken}
+          accessTokenSecret: ${settings.accessTokenSecret}
           localConfigFile: config/local.json
-    # 3. install consumer-frontend
     - install:
         jps: consumer-frontend/manifest.jps
         envName: shopozor-consumer-frontend
@@ -44,3 +61,5 @@ application:
           apiHost: https://demo.vuestorefront.io
           localConfigFile: config/local.json
     # 4. install mage2vuestorefront
+    # 5. install shopozor-management-api
+    # 6. install shopozor-management-frontend

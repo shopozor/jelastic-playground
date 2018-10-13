@@ -14,8 +14,10 @@ application:
 
   settings:
     fields:
+      - type: spacer
+        caption: Git repository
       - name: gitRepo
-        caption: Git Repo Url
+        caption: Url
         type: string
         default: https://bitbucket.org/softozor/shopozor-consumer-api
         required: true
@@ -35,31 +37,36 @@ application:
         type: string
         inputType: password
         required: true
+      - type: spacer
+        caption: Magento
       - name: magentoHost
-        caption: MAGENTO_HOST
-        type: string
-        default: softozor-magento.hidora.com
-        required: true
-      - name: localConfigFile
-        caption: Config filename relative to context
-        type: string
-        default: config/local.json
+        caption: HOST
+        type: hostpicker
+        editable: true
+        # default: softozor-magento.hidora.com
         required: true
       - name: consumerKey
-        caption: Magento CONSUMER_KEY
+        caption: CONSUMER_KEY
         type: string
         required: true
       - name: consumerSecret
-        caption: Magento CONSUMER_SECRET
+        caption: CONSUMER_SECRET
         type: string
         required: true
       - name: accessToken
-        caption: Magento ACCESS_TOKEN
+        caption: ACCESS_TOKEN
         type: string
         required: true
       - name: accessTokenSecret
-        caption: Magento ACCESS_TOKEN_SECRET
+        caption: ACCESS_TOKEN_SECRET
         type: string
+        required: true
+      - type: spacer
+        caption: Local config
+      - name: localConfigFile
+        caption: Config file in context
+        type: string
+        default: config/local.json
         required: true
 
   env:
@@ -144,10 +151,10 @@ application:
             replacement: ${settings.consumerKey}
           - pattern: CONSUMER_SECRET
             replacement: ${settings.consumerSecret}
-          - pattern: ACCESS_TOKEN
-            replacement: ${settings.accessToken}
           - pattern: ACCESS_TOKEN_SECRET
             replacement: ${settings.accessTokenSecret}
+          - pattern: ACCESS_TOKEN
+            replacement: ${settings.accessToken}
       nodeType: nodejs
     startApp:
       cmd:

@@ -14,8 +14,10 @@ application:
 
   settings:
     fields:
+      - type: spacer
+        caption: Git repository
       - name: gitRepo
-        caption: Git Repo Url
+        caption: Url
         type: string
         default: https://bitbucket.org/softozor/shopozor-consumer-frontend
         required: true
@@ -35,13 +37,16 @@ application:
         type: string
         inputType: password
         required: true
+      - type: spacer
       - name: apiHost
         caption: API_HOST
-        type: string
+        type: hostpicker
         default: https://demo.vuestorefront.io
         required: true
+      - type: spacer
+        caption: Local config
       - name: localConfigFile
-        caption: Config filename relative to context
+        caption: Config file in context
         type: string
         default: config/local.json
         required: true
