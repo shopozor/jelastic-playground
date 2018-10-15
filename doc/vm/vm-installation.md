@@ -1,15 +1,15 @@
-# Installation of vue-storefront in a VM
+# Development installation of vue-storefront in a VM
 
 ## Installing vuestorefront
 
-Follow the instructions from vue-storefront github repo:
+Follow the instructions from [vue-storefront github repo](https://github.com/DivanteLtd/vue-storefront/blob/master/doc/Installing%20on%20Linux%20and%20MacOS.md):
 ```
 git clone https://github.com/DivanteLtd/vue-storefront.git
 cd vue-storefront
 yarn
 yarn installer
 ```
-This is successful, contrary to the advice given in the medium article on vuestorefront:
+This is successful, contrary to the advice given in the [medium article on vuestorefront](https://medium.com/@piotrkarwatka/vue-storefront-how-to-install-and-integrate-with-magento2-227767dd65b2):
 ```
 cd vue-storefront
 yarn install
@@ -39,39 +39,28 @@ Then add
 ```
 127.0.0.1    local.magento
 ```
-to /etc/hosts.
+to `/etc/hosts`.
 
 Then set
 ```
 MAGENTO_URL=http://local.magento
 ```
-in env file
+in `env` file.
 
-Finally run
+Run
 ```
 docker exec -it docker-magento2_web_1 install-magento
 docker exec -it docker-magento2_web_1 install-sampledata
 ```
-The sampledata are coming from Magento2 example products dataset.
+The sampledata are coming from [Magento2 example products dataset](https://github.com/magento/magento2-sample-data).
 
-## Use mage2vuestorefront
-
-1. Follow the advice given in mage2vuestorefront github repo:
-```
-git clone https://github.com/DivanteLtd/mage2vuestorefront.git
-cd mage2vuestorefront/src
-npm install
-```
-2. Add new integration in the System -> Integrations  in Magento2
-
-I got the following tokens:
-
+Then add new integration in the System -> Integrations in Magento2. I got the following tokens:
 * Consumer Key        : 2uqsdrt61n6v5l0d90gmssjx7oyj229v
 * Consumer Secret   	: aderivm5s4yprgvji94233gw2sc73j1u
 * Access Token        : n5p7s6vli4ise05xplo44en5llyidex3
 * Access Token Secret : 60v6yivu7ew6l018b4cdf3tv3s89dh0u
 
-3.  Add
+Finally add
 ```
 export MAGENTO_CONSUMER_KEY=2uqsdrt61n6v5l0d90gmssjx7oyj229v
 export MAGENTO_CONSUMER_SECRET=aderivm5s4yprgvji94233gw2sc73j1u
@@ -81,9 +70,15 @@ export MAGENTO_URL=http://local.magento/rest
 ```
 to the .bashrc file (note the "/rest"!).
 
-4. Configure the magento2 synchronization with vue-storefront-api:
+## Use mage2vuestorefront
 
-Make sure the following sections of vue-storefront-api/config/local.json contain the correct parameters:
+1. Follow the advice given in [mage2vuestorefront github repo](https://github.com/DivanteLtd/mage2vuestorefront):
+```
+git clone https://github.com/DivanteLtd/mage2vuestorefront.git
+cd mage2vuestorefront/src
+npm install
+```
+2. Configure the magento2 synchronization with vue-storefront-api: make sure the following sections of `vue-storefront-api/config/local.json` contain the correct parameters:
 ```
 "magento2": {
   "url": "http://local.magento", // <-- modify this
@@ -126,7 +121,7 @@ Make sure the following sections of vue-storefront-api/config/local.json contain
     "debug": false
    }
 ```
-5. run (references in parentheses are made to System -> Integrations -> MyIntegration -> API)
+3. run (references in parentheses are made to System -> Integrations -> MyIntegration -> API)
 ```
 node ./cli.js taxrule               # (enabled by Stores -> Taxes)
 node ./cli.js attributes            # (enabled by Stores -> Attributes)
@@ -134,22 +129,20 @@ node ./cli.js categories            # (enabled by Catalog)
 node ./cli.js productcategories     # (enabled by Catalog)
 node ./cli.js products              # (enabled by Stores)
 ```
-in the mage2vuestorefront/src folder.
+in the `mage2vuestorefront/src` folder.
 
-6. re-index the database:
-
-In the vue-storefront-api folder, run
+4. re-index the database: in the vue-storefront-api folder, run
 ```
 npm run db rebuild -- --indexName=vue_storefront_catalog
 ```
-7. synchronize with
+5. synchronize with
 ```
 node cli.js productsdelta --removeNonExistient=true
 ```
-8. To allow for the carts / user synchronization, you need to enable the following systems in the System -> Integrations -> <MyIntegration> -> API:
-
+6. To allow for the carts / user synchronization, you need to enable the following systems in the System -> Integrations -> MyIntegration -> API:
+```
 Catalog, Sales, My Account and Carts
-
+```
 ## MAGENTO API KEYS
 
 These keys are stored in
