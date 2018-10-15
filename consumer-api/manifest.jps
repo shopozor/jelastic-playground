@@ -43,7 +43,7 @@ application:
         caption: HOST
         type: hostpicker
         editable: true
-        # default: softozor-magento.hidora.com
+        default: softozor-magento.hidora.com
         required: true
       - name: consumerKey
         caption: CONSUMER_KEY

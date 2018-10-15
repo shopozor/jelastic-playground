@@ -1,0 +1,14 @@
+jpsVersion: 1.3
+jpsType: update
+application:
+  name: Install Magento Sample Data
+  version: 0.0
+  baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master
+
+  targetNodes:
+    nodeType:
+      - apache2
+
+  onInstall:
+    - cmd [cp]:
+        - curl -fsSL https://raw.githubusercontent.com/alexcheng1982/docker-magento2/master/install-sampledata | /bin/bash
