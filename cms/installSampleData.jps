@@ -5,10 +5,44 @@ application:
   version: 0.0
   baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master
 
+  globals:
+    pathToAuthConfig: /var/www/webroot/ROOT/var/composer_home/auth.json
+    magentoCmd: /var/www/webroot/ROOT/bin/magento
+
+  settings:
+    fields:
+      # The following data come from
+      # https://marketplace.magento.com/customer/accessKeys/
+      - type: spacer
+        caption: Magento Marketplace
+      - name: publicKey
+        caption: Public key
+        type: string
+        required: true
+      - name: privateKey
+        caption: Private key
+        type: string
+        required: true
+
   targetNodes:
     nodeType:
       - apache2
 
   onInstall:
+    # TODO: need to increase memory in /etc/php.ini file 'memory_limit'
     - cmd [cp]:
-        - curl -fsSL https://raw.githubusercontent.com/alexcheng1982/docker-magento2/master/install-sampledata | /bin/bash
+        - rm -f ${globals.pathToAuthConfig}
+    - upload [cp]:
+        - sourcePath: ${baseUrl}/cms/auth.json
+          destPath: ${globals.pathToAuthConfig}
+    - replaceInFile:
+        path: ${globals.pathToAuthConfig}
+        replacements:
+          - pattern: PUBLIC_KEY
+            replacement: ${settings.publicKey}
+          - pattern: PRIVATE_KEY
+            replacement: ${settings.privateKey}
+    - cmd [cp]:
+        - ${globals.magentoCmd} sampledata:deploy
+        - ${globals.magentoCmd} setup:upgrade
+        - ${globals.magentoCmd} setup:di:compile
