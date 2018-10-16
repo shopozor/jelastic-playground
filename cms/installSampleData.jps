@@ -7,20 +7,22 @@ application:
 
   globals:
     pathToAuthConfig: /var/www/webroot/ROOT/var/composer_home/auth.json
-    magentoCmd: /var/www/webroot/ROOT/bin/magento
+    magentoCmd: php -d memory_limit=-1 /var/www/webroot/ROOT/bin/magento
 
   settings:
     fields:
       # The following data come from
       # https://marketplace.magento.com/customer/accessKeys/
       - type: spacer
-        caption: Magento Marketplace
+        caption: Marketplace
       - name: publicKey
         caption: Public key
+        default: ca10fda89dc37281c58f966536460488
         type: string
         required: true
       - name: privateKey
         caption: Private key
+        default: 4096b4c1b35f1f06d9e931ef7e59a1ce
         type: string
         required: true
 
@@ -29,20 +31,29 @@ application:
       - apache2
 
   onInstall:
-    # TODO: need to increase memory in /etc/php.ini file 'memory_limit'
-    - cmd [cp]:
+    - updateExistingAuthConfig
+    - installSampleData
+
+  actions:
+    updateExistingAuthConfig:
+      - cleanUpExistingAuthConfig
+      - upload:
+          - sourcePath: ${baseUrl}/cms/auth.json
+            destPath: ${globals.pathToAuthConfig}
+        nodeGroup: cp
+      - replaceInFile:
+          path: ${globals.pathToAuthConfig}
+          replacements:
+            - pattern: PUBLIC_KEY
+              replacement: ${settings.publicKey}
+            - pattern: PRIVATE_KEY
+              replacement: ${settings.privateKey}
+        nodeType: apache2
+    cleanUpExistingAuthConfig:
+      cmd [cp]:
         - rm -f ${globals.pathToAuthConfig}
-    - upload [cp]:
-        - sourcePath: ${baseUrl}/cms/auth.json
-          destPath: ${globals.pathToAuthConfig}
-    - replaceInFile:
-        path: ${globals.pathToAuthConfig}
-        replacements:
-          - pattern: PUBLIC_KEY
-            replacement: ${settings.publicKey}
-          - pattern: PRIVATE_KEY
-            replacement: ${settings.privateKey}
-    - cmd [cp]:
+    installSampleData:
+      cmd [cp]:
         - ${globals.magentoCmd} sampledata:deploy
         - ${globals.magentoCmd} setup:upgrade
         - ${globals.magentoCmd} setup:di:compile

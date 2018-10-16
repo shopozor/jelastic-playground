@@ -53,6 +53,7 @@ application:
     - install:
         jps: consumer-api/manifest.jps
         envName: shopozor-consumer-api
+        displayName: Consumer API
         settings:
           gitRepo: https://bitbucket.org/softozor/shopozor-consumer-api
           gitBranch: master
@@ -67,6 +68,7 @@ application:
     - install:
         jps: consumer-frontend/manifest.jps
         envName: shopozor-consumer-frontend
+        displayName: Consumer frontend
         settings:
           gitRepo: https://bitbucket.org/softozor/shopozor-consumer-frontend
           gitBranch: master

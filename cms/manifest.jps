@@ -1,0 +1,12 @@
+jpsVersion: 1.3
+jpsType: install
+application:
+  name: Shopozor CMS
+  version: 0.0
+  baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master
+
+  onInstall:
+    - install:
+        jps: https://raw.githubusercontent.com/jelastic-jps/magento/master/magento/manifest.jps
+        envName: env-${fn.random}
+        displayName: Shopozor CMS
