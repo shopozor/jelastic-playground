@@ -1,8 +1,8 @@
 jpsVersion: 1.3
 jpsType: install
 application:
-  id: consumer-api
-  name: Consumer API
+  id: shopozor-api
+  name: Shopozor API
   version: 0.0
   baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master
 
@@ -11,6 +11,8 @@ application:
     NODEJS_CONTEXT: ROOT
     NODEJS_PATH_TO_CONTEXT: ${globals.NODEJS_HOME}/${globals.NODEJS_CONTEXT}
     PATH_TO_IMAGEMAGICK: ${globals.NODEJS_HOME}/local
+    localConfigFile: ${globals.NODEJS_PATH_TO_CONTEXT}/config/local.json
+    localConfigTemplateFile: ${globals.NODEJS_PATH_TO_CONTEXT}/config/local-template.json
 
   settings:
     fields:
@@ -19,7 +21,7 @@ application:
       - name: gitRepo
         caption: Url
         type: string
-        default: https://bitbucket.org/softozor/shopozor-consumer-api
+        default: https://bitbucket.org/softozor/shopozor-api
         required: true
         regex: "^https?:\\/\\/.+$"
         regexText: Incorrect URL. HTTPS link to Git repository is required.
@@ -61,13 +63,6 @@ application:
         caption: ACCESS_TOKEN_SECRET
         type: string
         required: true
-      - type: spacer
-        caption: Local config
-      - name: localConfigFile
-        caption: Config file in context
-        type: string
-        default: config/local.json
-        required: true
 
   env:
     topology:
@@ -105,9 +100,8 @@ application:
 
   onInstall:
     - deployRepo
-    - setNodeIPInLocalConfigs
+    - adaptConfigs
     - installImageMagick
-    - replacePlaceholdersInLocalConfig
     - startApp
 
   actions:
@@ -125,21 +119,26 @@ application:
           params:
             context: ${globals.NODEJS_CONTEXT}
       nodeGroup: cp
+    adaptConfigs:
+      - cmd [cp]:
+          - cp ${globals.localConfigTemplateFile} ${globals.localConfigFile}
+      - setNodeIPInLocalConfigs
+      - replacePlaceholdersInLocalConfig
     setNodeIPInLocalConfigs:
       forEach(nodes.cp):
         replaceInFile:
-          path: ${globals.NODEJS_PATH_TO_CONTEXT}/${settings.localConfigFile}
+          path: ${globals.localConfigFile}
           replacements:
             - pattern: NODEJS_HOST
               replacement: ${@i.intIP}
           nodeId: ${@i.id}
     installImageMagick:
       cmd:
-        - curl -fsSL ${baseUrl}/consumer-api/scripts/InstallImageMagick.sh | /bin/bash -s ${globals.PATH_TO_IMAGEMAGICK}
+        - curl -fsSL ${baseUrl}/api/scripts/InstallImageMagick.sh | /bin/bash -s ${globals.PATH_TO_IMAGEMAGICK}
       nodeGroup: cp
     replacePlaceholdersInLocalConfig:
       replaceInFile:
-        path: ${globals.NODEJS_PATH_TO_CONTEXT}/${settings.localConfigFile}
+        path: ${globals.localConfigFile}
         replacements:
           - pattern: MAGENTO_HOST
             replacement: ${settings.magentoHost}

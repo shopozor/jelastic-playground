@@ -7,8 +7,8 @@ application:
   baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master/
 
   globals:
-    consumerApiEnvName: shopozor-consumer-api
-    consumerApiHost: ${globals.consumerApiEnvName}.hidora.com
+    apiEnvName: shopozor-api
+    apiHost: ${globals.apiEnvName}.hidora.com
 
   settings:
     fields:
@@ -49,13 +49,12 @@ application:
         required: true
 
   onInstall:
-    # 1. install magento
     - install:
-        jps: consumer-api/manifest.jps
-        envName: shopozor-consumer-api
-        displayName: Consumer API
+        jps: api/manifest.jps
+        envName: ${globals.apiEnvName}
+        displayName: API
         settings:
-          gitRepo: https://bitbucket.org/softozor/shopozor-consumer-api
+          gitRepo: https://bitbucket.org/softozor/shopozor-api
           gitBranch: master
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
@@ -74,8 +73,6 @@ application:
           gitBranch: master
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
-          apiHost: ${globals.consumerApiHost}
+          apiHost: ${globals.apiHost}
           localConfigFile: config/local.json
-    # 4. install mage2vuestorefront
-    # 5. install shopozor-management-api
-    # 6. install shopozor-management-frontend
+    # install shopozor-management-frontend

@@ -5,6 +5,9 @@ application:
   version: 0.0
   baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master
 
+  # TODO: can't install the sample data with 8 cloudlets
+  # sample data installation worked with 16 cloudlets
+
   onInstall:
     - install:
         jps: https://raw.githubusercontent.com/jelastic-jps/magento/master/magento/manifest.jps
