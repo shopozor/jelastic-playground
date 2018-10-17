@@ -8,6 +8,12 @@ application:
   globals:
     pathToAuthConfig: /var/www/webroot/ROOT/var/composer_home/auth.json
     magentoCmd: php -d memory_limit=-1 /var/www/webroot/ROOT/bin/magento
+    targetNodeType: apache2
+
+  # currently, you need to change the targetNodes' nodeType and the globals.targetNodeType values if you need to target another node type
+  targetNodes:
+    nodeType:
+      - apache2
 
   settings:
     fields:
@@ -26,21 +32,26 @@ application:
         type: string
         required: true
 
-  targetNodes:
-    nodeType:
-      - apache2
-
   onInstall:
+    - setSufficientNumberOfCloudlets
     - updateExistingAuthConfig
     - installSampleData
 
   actions:
+    setSufficientNumberOfCloudlets:
+      forEach(nodes.${globals.targetNodeType}):
+        api:
+          - method: environment.control.SetCloudletsCountById
+            params:
+              fixedCloudlets: 1
+              flexibleCloudlets: 16
+              nodeid: ${@i.id}
     updateExistingAuthConfig:
       - cleanUpExistingAuthConfig
       - upload:
           - sourcePath: ${baseUrl}/cms/auth.json
             destPath: ${globals.pathToAuthConfig}
-        nodeGroup: cp
+        nodeType: ${globals.targetNodeType}
       - replaceInFile:
           path: ${globals.pathToAuthConfig}
           replacements:
@@ -48,12 +59,12 @@ application:
               replacement: ${settings.publicKey}
             - pattern: PRIVATE_KEY
               replacement: ${settings.privateKey}
-        nodeType: apache2
+        nodeType: ${globals.targetNodeType}
     cleanUpExistingAuthConfig:
-      cmd [cp]:
+      cmd [${globals.targetNodeType}]:
         - rm -f ${globals.pathToAuthConfig}
     installSampleData:
-      cmd [cp]:
+      cmd [${globals.targetNodeType}]:
         - ${globals.magentoCmd} sampledata:deploy
         - ${globals.magentoCmd} setup:upgrade
         - ${globals.magentoCmd} setup:di:compile
