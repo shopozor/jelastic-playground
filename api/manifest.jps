@@ -103,7 +103,6 @@ application:
     - deployRepo
     - adaptConfigs
     - installImageMagick
-    - setupNginxLocations
     - startApp
 
   actions:
@@ -157,16 +156,6 @@ application:
           - pattern: ACCESS_TOKEN
             replacement: ${settings.accessToken}
       nodeType: nodejs
-    setupNginxLocations:
-      - replaceInFile:
-          path: /etc/nginx/nginx-jelastic.conf
-          replacements:
-            - pattern: \#USERLOCATIONS
-              replacement: "location /redis {
-                proxy_pass ${nodes.nosqldb.intIP}:6379
-              }"
-        # was not able to make it work with nodeGroup: bl
-        nodeType: nginx-dockerized
     startApp:
       cmd:
         - curl -fsSL ${baseUrl}/scripts/StartApp.sh | /bin/bash -s ${globals.NODEJS_PATH_TO_CONTEXT}
