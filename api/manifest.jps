@@ -10,6 +10,7 @@ application:
     NODEJS_HOME: /home/jelastic
     NODEJS_CONTEXT: ROOT
     NODEJS_PATH_TO_CONTEXT: ${globals.NODEJS_HOME}/${globals.NODEJS_CONTEXT}
+    NODEJS_PORT: 8080
     PATH_TO_IMAGEMAGICK: ${globals.NODEJS_HOME}/local
     localConfigFile: ${globals.NODEJS_PATH_TO_CONTEXT}/config/local.json
     localConfigTemplateFile: ${globals.NODEJS_PATH_TO_CONTEXT}/config/local-template.json
@@ -74,7 +75,7 @@ application:
           fixedCloudlets: 1
           cloudlets: 4
           env:
-            DOCKER_EXPOSED_PORT: 22,80,443,8080
+            DOCKER_EXPOSED_PORT: 22,80,443,${globals.NODEJS_PORT}
         - nodeGroup: cp
           nodeType: nodejs
           displayName: Application servers
@@ -84,7 +85,7 @@ application:
           env:
             PACKAGE_MANAGER: yarn
             PATH: /usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin:${globals.PATH_TO_IMAGEMAGICK}/bin
-            PORT: 8080
+            PORT: ${globals.NODEJS_PORT}
         - nodeGroup: nosqldb
           nodeType: redis
           displayName: Redis database
@@ -102,6 +103,7 @@ application:
     - deployRepo
     - adaptConfigs
     - installImageMagick
+    - setupNginxLocations
     - startApp
 
   actions:
@@ -155,6 +157,16 @@ application:
           - pattern: ACCESS_TOKEN
             replacement: ${settings.accessToken}
       nodeType: nodejs
+    setupNginxLocations:
+      - replaceInFile:
+          path: /etc/nginx/nginx-jelastic.conf
+          replacements:
+            - pattern: \#USERLOCATIONS
+              replacement: "location /redis {
+                proxy_pass ${nodes.nosqldb.intIP}:6379
+              }"
+        # was not able to make it work with nodeGroup: bl
+        nodeType: nginx-dockerized
     startApp:
       cmd:
         - curl -fsSL ${baseUrl}/scripts/StartApp.sh | /bin/bash -s ${globals.NODEJS_PATH_TO_CONTEXT}

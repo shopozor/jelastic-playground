@@ -75,4 +75,13 @@ application:
           gitPassword: ${settings.gitPassword}
           apiHost: ${globals.apiHost}
           localConfigFile: config/local.json
-    # install shopozor-management-frontend
+    - install:
+        jps: management-frontend/manifest.jps
+        envName: shopozor-management-frontend
+        displayName: Management frontend
+        settings:
+          gitRepo: https://bitbucket.org/softozor/shopozor-management-frontend
+          gitBranch: master
+          gitUser: ${settings.gitUser}
+          gitPassword: ${settings.gitPassword}
+          apiHost: ${globals.apiHost}

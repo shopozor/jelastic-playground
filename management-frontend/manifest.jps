@@ -1,19 +1,16 @@
 jpsVersion: 1.3
 jpsType: install
 application:
-  id: consumer-frontend
-  name: Consumer frontend
+  id: management-frontend
+  name: Management frontend
   version: 0.0
   baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master
 
   globals:
-    pathToSharedData: /opt/shared-data
     NODEJS_HOME: /home/jelastic
     NODEJS_CONTEXT: ROOT
     NODEJS_PATH_TO_CONTEXT: ${globals.NODEJS_HOME}/${globals.NODEJS_CONTEXT}
-    NODEJS_PORT: 3000
-    localConfigFile: ${globals.NODEJS_PATH_TO_CONTEXT}/config/local.json
-    localConfigTemplateFile: ${globals.NODEJS_PATH_TO_CONTEXT}/config/local-template.json
+    NODEJS_PORT: 4000
 
   settings:
     fields:
@@ -22,7 +19,7 @@ application:
       - name: gitRepo
         caption: Url
         type: string
-        default: https://bitbucket.org/softozor/shopozor-consumer-frontend
+        default: https://bitbucket.org/softozor/shopozor-management-frontend
         required: true
         regex: "^https?:\\/\\/.+$"
         regexText: Incorrect URL. HTTPS link to Git repository is required.
@@ -58,12 +55,6 @@ application:
           cloudlets: 4
           env:
             DOCKER_EXPOSED_PORT: 22,80,443,${globals.NODEJS_PORT}
-          volumeMounts:
-            ${globals.pathToSharedData}:
-              readOnly: false
-              sourcePath: /data
-              sourceNodeGroup: cp
-          volumes: ${globals.pathToSharedData}
         - nodeGroup: cp
           nodeType: nodejs
           displayName: Application servers
@@ -76,8 +67,6 @@ application:
 
   onInstall:
     - deployRepo
-    - adaptConfig
-    - setupStaticAssetsServing
     - startApp
 
   actions:
@@ -95,42 +84,6 @@ application:
           params:
             context: ${globals.NODEJS_CONTEXT}
       nodeGroup: cp
-    adaptConfig:
-      - cmd [cp]:
-          - cp ${globals.localConfigTemplateFile} ${globals.localConfigFile}
-      - setNodeIPInLocalConfigs
-      - replaceApiHostInLocalConfigs
-    setNodeIPInLocalConfigs:
-      forEach(nodes.cp):
-        replaceInFile:
-          path: ${globals.localConfigFile}
-          replacements:
-            - pattern: NODEJS_HOST
-              replacement: ${@i.intIP}
-          nodeId: ${@i.id}
-    replaceApiHostInLocalConfigs:
-      replaceInFile:
-        path: ${globals.localConfigFile}
-        replacements:
-          - pattern: API_HOST
-            replacement: ${settings.apiHost}
-      nodeType: nodejs
-    setupStaticAssetsServing:
-      - cmd [cp]:
-          - mkdir /data 
-          - chown -R root:root /data 
-          - mv ${globals.NODEJS_PATH_TO_CONTEXT}/src/themes/default/assets /data/
-        user: root
-      - replaceInFile:
-          path: /etc/nginx/nginx-jelastic.conf
-          replacements:
-            - pattern: \#USERLOCATIONS
-              replacement: "location /assets {
-                root ${globals.pathToSharedData};
-              }"
-        # was not able to make it work with nodeGroup: bl
-        nodeType: nginx-dockerized
-      - restartNodes [bl]
     startApp:
       cmd:
         - curl -fsSL ${baseUrl}/scripts/StartApp.sh | /bin/bash -s ${globals.NODEJS_PATH_TO_CONTEXT}
