@@ -1,2 +1,2 @@
-var resp = jelastic.environment.security.GetRules();
+var resp = jelastic.environment.security.GetRules(envName, session);
 return resp;
