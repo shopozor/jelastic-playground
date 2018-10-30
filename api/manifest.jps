@@ -18,6 +18,13 @@ application:
   settings:
     fields:
       - type: spacer
+        caption: API
+      - name: port
+        caption: Listening port
+        default: 8080
+        type: number
+        required: true
+      - type: spacer
         caption: Git repository
       - name: gitRepo
         caption: Url
@@ -103,6 +110,10 @@ application:
     - deployRepo
     - adaptConfigs
     - installImageMagick
+    - defineRedisUpstreamServersInNginxConfig
+    - protectEnvironmentFromOutside
+    - uploadRedisConfigurationForNginx
+    # TODO: restart nginx!
     - startApp
 
   actions:
@@ -156,6 +167,34 @@ application:
           - pattern: ACCESS_TOKEN
             replacement: ${settings.accessToken}
       nodeType: nodejs
+    protectEnvironmentFromOutside:
+      - replaceNginxDefaultPortWithNonDefault
+      - script: /scripts/DenyAllConnectionsToNginxDefaultPort.js
+    replaceNginxDefaultPortWithNonDefault:
+      replaceInFile:
+        path: /etc/nginx/nginx-jelastic.conf
+        replacements:
+          - pattern: 80\$
+            replacement: ${settings.port}\$
+          - pattern: \*\:80\;
+            replacement: \*\:${settings.port}\;
+          - pattern: \[\:\:\]\:80\;
+            replacement: "[::]:${settings.port};"
+      nodeType: nginx-dockerized
+    defineRedisUpstreamServersInNginxConfig:
+      - replaceInFile:
+          path: /etc/nginx/nginx-jelastic.conf
+          replacements:
+            - pattern: \#\#\# UPSTREAMS LIST FOLLOWS HERE \#\#\#
+              replacement: "upstream redis_upstream { 
+                server ${nodes.nosqldb.intIP};
+              }"
+          nodeType: nginx-dockerized    
+    uploadRedisConfigurationForNginx:
+      - upload: 
+          - nodeType: nginx-dockerized
+            sourcePath: /api/config/redis-server.conf
+            destPath: /etc/nginx/conf.d/redis-server.conf
     startApp:
       cmd:
         - curl -fsSL ${baseUrl}/scripts/StartApp.sh | /bin/bash -s ${globals.NODEJS_PATH_TO_CONTEXT}

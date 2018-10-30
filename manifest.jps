@@ -9,6 +9,7 @@ application:
   globals:
     apiEnvName: shopozor-api
     apiHost: ${globals.apiEnvName}.hidora.com
+    apiPort: 8080
 
   settings:
     fields:
@@ -63,7 +64,7 @@ application:
           consumerSecret: ${settings.consumerSecret}
           accessToken: ${settings.accessToken}
           accessTokenSecret: ${settings.accessTokenSecret}
-          localConfigFile: config/local.json
+          apiPort: ${globals.apiPort}
     - install:
         jps: consumer-frontend/manifest.jps
         envName: shopozor-consumer-frontend
@@ -74,7 +75,6 @@ application:
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
           apiHost: ${globals.apiHost}
-          localConfigFile: config/local.json
     - install:
         jps: management-frontend/manifest.jps
         envName: shopozor-management-frontend
@@ -85,3 +85,4 @@ application:
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
           apiHost: ${globals.apiHost}
+    # TODO: open nginx for all our frontends; this is a firewall configuration that needs to be adapted on the API's environment

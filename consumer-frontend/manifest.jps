@@ -115,6 +115,7 @@ application:
           - pattern: API_HOST
             replacement: ${settings.apiHost}
       nodeType: nodejs
+    # TODO: remove this:
     setupStaticAssetsServing:
       - cmd [cp]:
           - mkdir /data 
