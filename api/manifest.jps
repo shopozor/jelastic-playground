@@ -193,7 +193,7 @@ application:
     uploadRedisConfigurationForNginx:
       - upload: 
           - nodeType: nginx-dockerized
-            sourcePath: /api/config/redis-server.conf
+            sourcePath: ${baseUrl}/api/config/redis-server.conf
             destPath: /etc/nginx/conf.d/redis-server.conf
     startApp:
       cmd:
