@@ -1,9 +1,12 @@
 var APPID = getParam("TARGET_APPID");
 var resp = jelastic.environment.security.GetRules(APPID, session);
 
-return resp.rules.find(function(element) {
-  return element.ports == 80;
-});
+return jelastic;
+
+// this doesn't work:
+// return resp.rules.find(function(element) {
+//   return element.ports == 80;
+// });
 
 /*
 The answer is of type:
