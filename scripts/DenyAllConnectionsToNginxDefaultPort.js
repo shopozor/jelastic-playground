@@ -1,7 +1,7 @@
 var APPID = getParam("TARGET_APPID");
 var resp = jelastic.environment.security.GetRules(APPID, session);
 
-return jelastic.toJSON();
+return JSON.stringify(jelastic);
 
 // this doesn't work:
 // return resp.rules.find(function(element) {
