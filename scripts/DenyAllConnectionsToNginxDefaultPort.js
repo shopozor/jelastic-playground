@@ -2,7 +2,7 @@ var SUCCESS_RESPONSE = { result: 0 };
 
 function checkJelasticResponse(response, errorMsg) {
   if (!response || response.result !== 0) {
-    throw errorMsg + response;
+    throw errorMsg + ": " + response;
   }
 }
 
@@ -31,8 +31,8 @@ function denyAllConnectionsToNginxDefaultPort() {
   for (var key in rules) {
     var rule = rules[key];
     if (rule.ports == 80) {
-      rule.name = "Allow HTTP";
-      rule.action = "ALLOW";
+      rule.name = "Deny HTTP";
+      rule.action = "DENY";
       var resp = jelastic.environment.security.EditRule(APPID, session, rule);
       checkJelasticResponse(
         resp,
