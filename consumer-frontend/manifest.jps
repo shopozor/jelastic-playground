@@ -14,8 +14,6 @@ application:
     NODEJS_PORT: 3000
     localConfigFile: ${globals.NODEJS_PATH_TO_CONTEXT}/config/local.json
     localConfigTemplateFile: ${globals.NODEJS_PATH_TO_CONTEXT}/config/local-template.json
-    # apiEndpoint: ""
-    # imgEndpoint: ""
 
   settings:
     fields:
@@ -126,8 +124,8 @@ application:
               replacement: ${settings.apiHost}
             - pattern: API_PORT
               replacement: ${settings.apiPort}
-      - setupEndpointVariables
-    setupEndpointVariables:
+      - replaceEndpointVariables
+    replaceEndpointVariables:
       script: ${baseUrl}/scripts/ReplaceEndpointPlaceholders.js
       apiPort: ${settings.apiPort}
       apiHost: ${settings.apiHost}
