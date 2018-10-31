@@ -10,6 +10,7 @@ application:
     apiEnvName: shopozor-api
     apiHost: ${globals.apiEnvName}.hidora.com
     apiPort: 8080
+    redisPort: 6379
 
   settings:
     fields:
@@ -64,7 +65,8 @@ application:
           consumerSecret: ${settings.consumerSecret}
           accessToken: ${settings.accessToken}
           accessTokenSecret: ${settings.accessTokenSecret}
-          apiPort: ${globals.apiPort}
+          port: ${globals.apiPort}
+          redisPort: ${globals.redisPort}
     - install:
         jps: consumer-frontend/manifest.jps
         envName: shopozor-consumer-frontend
@@ -75,6 +77,8 @@ application:
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
           apiHost: ${globals.apiHost}
+          apiPort: ${globals.apiPort}
+          redisPort: ${globals.redisPort}
     - install:
         jps: management-frontend/manifest.jps
         envName: shopozor-management-frontend

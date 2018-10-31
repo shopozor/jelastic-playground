@@ -14,6 +14,8 @@ application:
     NODEJS_PORT: 3000
     localConfigFile: ${globals.NODEJS_PATH_TO_CONTEXT}/config/local.json
     localConfigTemplateFile: ${globals.NODEJS_PATH_TO_CONTEXT}/config/local-template.json
+    # apiEndpoint: ""
+    # imgEndpoint: ""
 
   settings:
     fields:
@@ -46,6 +48,14 @@ application:
         type: hostpicker
         default: https://demo.vuestorefront.io
         required: true
+      - name: apiPort
+        caption: API_PORT
+        type: numberpicker
+        min: 0
+        max: 9999
+        editable: true
+        default: 8080
+        required: false
 
   env:
     topology:
@@ -99,7 +109,7 @@ application:
       - cmd [cp]:
           - cp ${globals.localConfigTemplateFile} ${globals.localConfigFile}
       - setNodeIPInLocalConfigs
-      - replaceApiHostInLocalConfigs
+      - replacePlaceholdersInLocalConfigs
     setNodeIPInLocalConfigs:
       forEach(nodes.cp):
         replaceInFile:
@@ -108,13 +118,20 @@ application:
             - pattern: NODEJS_HOST
               replacement: ${@i.intIP}
           nodeId: ${@i.id}
-    replaceApiHostInLocalConfigs:
-      replaceInFile:
-        path: ${globals.localConfigFile}
-        replacements:
-          - pattern: API_HOST
-            replacement: ${settings.apiHost}
-      nodeType: nodejs
+    replacePlaceholdersInLocalConfigs:
+      - replaceInFile:
+          path: ${globals.localConfigFile}
+          replacements:
+            - pattern: API_HOST
+              replacement: ${settings.apiHost}
+            - pattern: API_PORT
+              replacement: ${settings.apiPort}
+      - setupEndpointVariables
+    setupEndpointVariables:
+      script: ${baseUrl}/scripts/ReplaceEndpointPlaceholders.js
+      apiPort: ${settings.apiPort}
+      apiHost: ${settings.apiHost}
+      pathToConfig: ${globals.localConfigFile}
     # TODO: remove this:
     setupStaticAssetsServing:
       - cmd [cp]:

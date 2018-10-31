@@ -22,7 +22,18 @@ application:
       - name: port
         caption: Listening port
         default: 8080
-        type: number
+        type: numberpicker
+        min: 0
+        max: 9999
+        editable: true
+        required: true
+      - name: redisPort
+        caption: Redis port
+        default: 6379
+        type: numberpicker
+        min: 0
+        max: 9999
+        editable: true
         required: true
       - type: spacer
         caption: Git repository
@@ -110,10 +121,7 @@ application:
     - deployRepo
     - adaptConfigs
     - installImageMagick
-    - defineRedisUpstreamServersInNginxConfig
-    - protectEnvironmentFromOutside
-    - uploadRedisConfigurationForNginx
-    # TODO: restart nginx!
+    - setupNginx
     - startApp
 
   actions:
@@ -167,9 +175,15 @@ application:
           - pattern: ACCESS_TOKEN
             replacement: ${settings.accessToken}
       nodeType: nodejs
+    setupNginx:
+      - protectEnvironmentFromOutside
+      - defineRedisUpstreamServersInNginxConfig
+      - exposeRedis
+      - restartNodes:
+        - nodeGroup: nginx-dockerized
     protectEnvironmentFromOutside:
       - replaceNginxDefaultPortWithNonDefault
-      - script: /scripts/DenyAllConnectionsToNginxDefaultPort.js
+      - script: ${baseUrl}/scripts/DenyAllConnectionsToNginxDefaultPort.js
     replaceNginxDefaultPortWithNonDefault:
       replaceInFile:
         path: /etc/nginx/nginx-jelastic.conf
@@ -185,16 +199,24 @@ application:
       - replaceInFile:
           path: /etc/nginx/nginx-jelastic.conf
           replacements:
+            # the port here below (6379) is redis official port
+            # it is defined by the way it was installed
             - pattern: \#\#\# UPSTREAMS LIST FOLLOWS HERE \#\#\#
               replacement: "upstream redis_upstream { 
-                server ${nodes.nosqldb.intIP};
+                server ${nodes.nosqldb.intIP}:6379;
               }"
           nodeType: nginx-dockerized    
-    uploadRedisConfigurationForNginx:
+    exposeRedis:
       - upload: 
           - nodeType: nginx-dockerized
             sourcePath: ${baseUrl}/api/config/redis-server.conf
             destPath: /etc/nginx/conf.d/redis-server.conf
+      - replaceInFile:
+          path: /etc/nginx/conf.d/redis-server.conf
+          # the port I am setting here is an arbitrary port we chose ourselves
+          replacements:
+            - pattern: REDIS_PORT
+              replacement: ${settings.redisPort}
     startApp:
       cmd:
         - curl -fsSL ${baseUrl}/scripts/StartApp.sh | /bin/bash -s ${globals.NODEJS_PATH_TO_CONTEXT}
