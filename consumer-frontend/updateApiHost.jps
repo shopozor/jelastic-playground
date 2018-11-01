@@ -25,7 +25,7 @@ application:
         min: 0
         max: 9999
         editable: true
-        required: false
+        required: true
 
   onInstall:
     - adaptConfig

@@ -53,7 +53,7 @@ application:
         max: 9999
         editable: true
         default: 8080
-        required: false
+        required: true
 
   env:
     topology:
