@@ -124,6 +124,7 @@ application:
               replacement: ${settings.apiHost}
             - pattern: API_PORT
               replacement: ${settings.apiPort}
+        nodeType: nodejs
       - replaceEndpointVariables
     replaceEndpointVariables:
       script: ${baseUrl}/scripts/ReplaceEndpointPlaceholders.js

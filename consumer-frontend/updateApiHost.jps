@@ -19,6 +19,13 @@ application:
         type: hostpicker
         default: https://demo.vuestorefront.io
         required: true
+      - name: apiPort
+        caption: API_PORT
+        type: numberpicker
+        min: 0
+        max: 9999
+        editable: true
+        required: false
 
   onInstall:
     - adaptConfig
@@ -29,7 +36,7 @@ application:
       - cmd [cp]:
           - cp ${globals.localConfigTemplateFile} ${globals.localConfigFile}
       - setNodeIPInLocalConfigs
-      - replaceApiHostInLocalConfigs
+      - replacePlaceholdersInLocalConfigs
     setNodeIPInLocalConfigs:
       forEach(nodes.cp):
         replaceInFile:
@@ -38,13 +45,21 @@ application:
             - pattern: NODEJS_HOST
               replacement: ${@i.intIP}
           nodeId: ${@i.id}
-    replaceApiHostInLocalConfigs:
-      replaceInFile:
-        path: ${globals.localConfigFile}
-        replacements:
-          - pattern: API_HOST
-            replacement: ${settings.apiHost}
-      nodeType: nodejs
+    replacePlaceholdersInLocalConfigs:
+      - replaceInFile:
+          path: ${globals.localConfigFile}
+          replacements:
+            - pattern: API_HOST
+              replacement: ${settings.apiHost}
+            - pattern: API_PORT
+              replacement: ${settings.apiPort}
+        nodeType: nodejs
+      - replaceEndpointVariables
+    replaceEndpointVariables:
+      script: ${baseUrl}/scripts/ReplaceEndpointPlaceholders.js
+      apiPort: ${settings.apiPort}
+      apiHost: ${settings.apiHost}
+      pathToConfig: ${globals.localConfigFile}
     restartApp:
       cmd:
         - curl -fsSL ${baseUrl}/scripts/RestartApp.sh | /bin/bash -s ${globals.NODEJS_PATH_TO_CONTEXT}
