@@ -47,8 +47,12 @@ function replaceEndpointsInConfig(path, host, port) {
   return SUCCESS_RESPONSE;
 }
 
+function removeTrailingSlash(host) {
+  return host.endsWith("/") ? host.substring(0, host.length - 1) : host;
+}
+
 return replaceEndpointsInConfig(
   getParam("pathToConfig"),
-  getParam("apiHost"),
+  removeTrailingSlash(getParam("apiHost")),
   getParam("apiPort")
 );
