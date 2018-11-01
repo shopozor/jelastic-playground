@@ -217,6 +217,7 @@ application:
           replacements:
             - pattern: REDIS_PORT
               replacement: ${settings.redisPort}
+        nodeType: nginx-dockerized
     startApp:
       cmd:
         - curl -fsSL ${baseUrl}/scripts/StartApp.sh | /bin/bash -s ${globals.NODEJS_PATH_TO_CONTEXT}
