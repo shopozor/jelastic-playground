@@ -47,8 +47,12 @@ function replaceEndpointsInConfig(path, host, port) {
   return SUCCESS_RESPONSE;
 }
 
+function hasTrailingSlash(host) {
+  return host.lastIndexOf("/") === host.length - 1;
+}
+
 function removeTrailingSlash(host) {
-  return host.endsWith("/") ? host.substring(0, host.length - 1) : host;
+  return hasTrailingSlash(host) ? host.substring(0, host.length - 1) : host;
 }
 
 return replaceEndpointsInConfig(
