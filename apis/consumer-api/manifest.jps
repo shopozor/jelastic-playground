@@ -209,7 +209,7 @@ application:
     exposeRedis:
       - upload: 
           - nodeType: nginx-dockerized
-            sourcePath: ${baseUrl}/api/config/redis-server.conf
+            sourcePath: ${baseUrl}/apis/consumer-api/config/redis-server.conf
             destPath: /etc/nginx/conf.d/redis-server.conf
       - replaceInFile:
           path: /etc/nginx/conf.d/redis-server.conf
