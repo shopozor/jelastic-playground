@@ -7,9 +7,9 @@ application:
   baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master/
 
   globals:
-    apiEnvName: shopozor-api
-    apiHost: ${globals.apiEnvName}.hidora.com
-    apiPort: 8080
+    consumerApiEnvName: shopozor-consumer-api
+    consumerApiHost: ${globals.consumerApiEnvName}.hidora.com
+    consumerApiPort: 8080
     redisPort: 6379
 
   settings:
@@ -52,9 +52,9 @@ application:
 
   onInstall:
     - install:
-        jps: api/manifest.jps
-        envName: ${globals.apiEnvName}
-        displayName: API
+        jps: apis/consumer-api/manifest.jps
+        envName: ${globals.consumerApiEnvName}
+        displayName: Consumer API
         settings:
           gitRepo: https://bitbucket.org/softozor/shopozor-api
           gitBranch: master
@@ -65,10 +65,10 @@ application:
           consumerSecret: ${settings.consumerSecret}
           accessToken: ${settings.accessToken}
           accessTokenSecret: ${settings.accessTokenSecret}
-          port: ${globals.apiPort}
+          port: ${globals.consumerApiPort}
           redisPort: ${globals.redisPort}
     - install:
-        jps: consumer-frontend/manifest.jps
+        jps: frontends/consumer-frontend/manifest.jps
         envName: shopozor-consumer-frontend
         displayName: Consumer frontend
         settings:
@@ -76,11 +76,14 @@ application:
           gitBranch: master
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
-          apiHost: ${globals.apiHost}
-          apiPort: ${globals.apiPort}
+          consumerApiHost: ${globals.consumerApiHost}
+          consumerApiPort: ${globals.consumerApiPort}
           redisPort: ${globals.redisPort}
+    - script: ${baseUrl}/apis/script/OpenToEnvironment.js
+      port: 8080
+      srcEnv: ${globals.consumerApiEnvName}
     - install:
-        jps: management-frontend/manifest.jps
+        jps: frontends/management-frontend/manifest.jps
         envName: shopozor-management-frontend
         displayName: Management frontend
         settings:
@@ -88,5 +91,6 @@ application:
           gitBranch: master
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
-          apiHost: ${globals.apiHost}
-    # TODO: open nginx for all our frontends; this is a firewall configuration that needs to be adapted on the API's environment
+          consumerApiHost: ${globals.consumerApiHost}
+    # open management-api for access from management-frontend
+    # open consumer-api for access from management-api

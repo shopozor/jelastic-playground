@@ -154,7 +154,7 @@ application:
           nodeId: ${@i.id}
     installImageMagick:
       cmd:
-        - curl -fsSL ${baseUrl}/api/scripts/InstallImageMagick.sh | /bin/bash -s ${globals.PATH_TO_IMAGEMAGICK}
+        - curl -fsSL ${baseUrl}/apis/consumer-api/scripts/InstallImageMagick.sh | /bin/bash -s ${globals.PATH_TO_IMAGEMAGICK}
       nodeGroup: cp
     replacePlaceholdersInLocalConfig:
       replaceInFile:
@@ -183,7 +183,7 @@ application:
         - nodeGroup: nginx-dockerized
     protectEnvironmentFromOutside:
       - replaceNginxDefaultPortWithNonDefault
-      - script: ${baseUrl}/scripts/DenyAllConnectionsToNginxDefaultPort.js
+      - script: ${baseUrl}/apis/scripts/DenyAllConnectionsToNginxDefaultPort.js
     replaceNginxDefaultPortWithNonDefault:
       replaceInFile:
         path: /etc/nginx/nginx-jelastic.conf

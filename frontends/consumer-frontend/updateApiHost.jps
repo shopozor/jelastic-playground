@@ -56,7 +56,7 @@ application:
         nodeType: nodejs
       - replaceEndpointVariables
     replaceEndpointVariables:
-      script: ${baseUrl}/scripts/ReplaceEndpointPlaceholders.js
+      script: ${baseUrl}/frontends/scripts/ReplaceEndpointPlaceholders.js
       apiPort: ${settings.apiPort}
       apiHost: ${settings.apiHost}
       pathToConfig: ${globals.localConfigFile}
