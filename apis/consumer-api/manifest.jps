@@ -40,7 +40,7 @@ application:
       - name: gitRepo
         caption: Url
         type: string
-        default: https://bitbucket.org/softozor/shopozor-api
+        default: https://bitbucket.org/softozor/shopozor-consumer-api
         required: true
         regex: "^https?:\\/\\/.+$"
         regexText: Incorrect URL. HTTPS link to Git repository is required.

@@ -4,7 +4,7 @@ application:
   id: shopozor-configuration
   name: Shopozor
   version: 0.0
-  baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master/
+  baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master
 
   globals:
     consumerApiEnvName: shopozor-consumer-api
@@ -56,7 +56,7 @@ application:
         envName: ${globals.consumerApiEnvName}
         displayName: Consumer API
         settings:
-          gitRepo: https://bitbucket.org/softozor/shopozor-api
+          gitRepo: https://bitbucket.org/softozor/shopozor-consumer-api
           gitBranch: master
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
@@ -79,7 +79,7 @@ application:
           consumerApiHost: ${globals.consumerApiHost}
           consumerApiPort: ${globals.consumerApiPort}
           redisPort: ${globals.redisPort}
-    - script: ${baseUrl}/apis/script/OpenToEnvironment.js
+    - script: ${baseUrl}/apis/scripts/OpenToEnvironment.js
       port: 8080
       srcEnv: ${globals.consumerApiEnvName}
     - install:
