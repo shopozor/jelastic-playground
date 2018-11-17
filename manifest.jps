@@ -79,9 +79,7 @@ application:
           consumerApiHost: ${globals.consumerApiHost}
           consumerApiPort: ${globals.consumerApiPort}
           redisPort: ${globals.redisPort}
-    - script: ${baseUrl}/apis/scripts/OpenToEnvironment.js
-      port: 8080
-      srcEnv: ${globals.consumerApiEnvName}
+    - allowAccessToApiFromFrontend
     - install:
         jps: frontends/management-frontend/manifest.jps
         envName: shopozor-management-frontend
@@ -94,3 +92,10 @@ application:
           consumerApiHost: ${globals.consumerApiHost}
     # open management-api for access from management-frontend
     # open consumer-api for access from management-api
+
+  actions:
+    allowAccessToApiFromFrontend:
+      - script: ${baseUrl}/apis/scripts/OpenToEnvironment.js
+        port: 8080
+        envToOpen: ${globals.consumerApiEnvName}
+        envToAllow: shopozor-consumer-frontend

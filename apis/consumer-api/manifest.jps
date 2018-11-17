@@ -206,15 +206,6 @@ application:
                 server ${nodes.nosqldb.intIP}:6379;
               }"
           nodeType: nginx-dockerized 
-
-          # TODO: to use the nodeGroup instead of the nodeType, the work-around is to do the following:
-          # api: jelastic.environment.file.ReplaceInBody
-          # path: /home/jelastic/ROOT/config/local.json
-          # pattern: MAGENTO_HOST
-          # replacement: ${settings.magentoHost}
-          # nodeGroup: cp
-          # However, I had issues using the ${globals.localConfigFile} as the path ... 
-
     exposeRedis:
       - upload: 
           - nodeType: nginx-dockerized
