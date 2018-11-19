@@ -48,7 +48,7 @@ function getListOfNodejsNodeIPs(envName) {
   return result.toString();
 }
 
-function allowConnectionFromEnv(port, envToOpen, envToAllow) {
+function allowConnectionFromEnv(portToOpen, envToOpen, envToAllow) {
   const SUCCESS_RESPONSE = { result: 0 };
   const rule = {
     protocol: "ALL",
@@ -56,7 +56,7 @@ function allowConnectionFromEnv(port, envToOpen, envToAllow) {
     isEnabled: true,
     name: "Allow internal connection",
     action: "ALLOW",
-    ports: port,
+    ports: portToOpen,
     type: "CUSTOM",
     direction: "INPUT",
     relatedEnvName: envToOpen
@@ -66,7 +66,7 @@ function allowConnectionFromEnv(port, envToOpen, envToAllow) {
 }
 
 return allowConnectionFromEnv(
-  getParam("port"),
+  getParam("portToOpen"),
   getParam("envToOpen"),
   getParam("envToAllow")
 );
