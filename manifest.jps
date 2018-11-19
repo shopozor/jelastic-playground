@@ -79,6 +79,8 @@ application:
           consumerApiHost: ${globals.consumerApiHost}
           consumerApiPort: ${globals.consumerApiPort}
           redisPort: ${globals.redisPort}
+    # - installAddon:
+    #     id: letsencrypt
     - allowAccessToApiFromFrontend
     - install:
         jps: frontends/management-frontend/manifest.jps
@@ -96,6 +98,17 @@ application:
   actions:
     allowAccessToApiFromFrontend:
       - script: ${baseUrl}/apis/scripts/OpenToEnvironment.js
-        port: 8080
+        portToOpen: 8080
         envToOpen: ${globals.consumerApiEnvName}
         envToAllow: shopozor-consumer-frontend
+  # TODO: install that for all environments! doesn't seem to work completely
+  # addons:
+  #   - id: letsencrypt
+  #     name: letsencrypt
+  #     onInstall:
+  #       - install:
+  #           envName: shopozor-consumer-frontend
+  #           jps: https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps
+  #           settings:
+  #             nodeGroup: bl
+  #             customDomains: "" # TODO: get that as argument
