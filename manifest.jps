@@ -76,11 +76,11 @@ application:
           gitBranch: master
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
-          consumerApiHost: ${globals.consumerApiHost}
-          consumerApiPort: ${globals.consumerApiPort}
+          apiHost: ${globals.consumerApiHost}
+          apiPort: ${globals.consumerApiPort}
           redisPort: ${globals.redisPort}
-    # - installAddon:
-    #     id: letsencrypt
+    - installAddon:
+        id: letsencrypt
     - allowAccessToApiFromFrontend
     - install:
         jps: frontends/management-frontend/manifest.jps
@@ -101,14 +101,15 @@ application:
         portToOpen: 8080
         envToOpen: ${globals.consumerApiEnvName}
         envToAllow: shopozor-consumer-frontend
-  # TODO: install that for all environments! doesn't seem to work completely
-  # addons:
-  #   - id: letsencrypt
-  #     name: letsencrypt
-  #     onInstall:
-  #       - install:
-  #           envName: shopozor-consumer-frontend
-  #           jps: https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps
-  #           settings:
-  #             nodeGroup: bl
-  #             customDomains: "" # TODO: get that as argument
+
+  # TODO: let this depend on the envName and customDomains so that I can reuse that code
+  addons:
+    - id: letsencrypt
+      name: letsencrypt
+      onInstall:
+        - install:
+            envName: shopozor-consumer-frontend
+            jps: https://github.com/jelastic-jps/lets-encrypt/blob/master/manifest.jps
+            settings:
+              nodeGroup: bl
+              customDomains: "" # TODO: get that as argument
