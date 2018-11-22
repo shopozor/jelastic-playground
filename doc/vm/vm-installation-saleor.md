@@ -42,7 +42,7 @@ sudo apt install build-essential python3-venv python3-dev python3-pip python3-cf
 pip3 install virtualenvwrapper
 ```
 
-Following to the [advice](https://medium.com/@gitudaniel/installing-virtualenvwrapper-for-python3-ad3dfea7c717), extend the `~/.bashrc` file with
+Following the [advice](https://medium.com/@gitudaniel/installing-virtualenvwrapper-for-python3-ad3dfea7c717), extend the `~/.bashrc` file with
 
 ```
 export WORKON_HOME=$HOME/.virtualenvs
@@ -58,7 +58,7 @@ source $HOME/.local/bin/virtualenvwrapper.sh
 git clone https://github.com/softozor/saleor.git
 ```
 
-3. Create a virtual environment (see [documentation](https://serverfault.com/questions/110154/whats-the-default-superuser-username-password-for-postgres-after-a-new-install)) in the saleor repo:
+3. Create a virtual environment (see [documentation](https://virtualenvwrapper.readthedocs.io/en/latest/install.html#quick-start)) in the saleor repo:
 
 ```
 cd saleor
