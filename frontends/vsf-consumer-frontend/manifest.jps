@@ -22,7 +22,7 @@ application:
       - name: gitRepo
         caption: Url
         type: string
-        default: https://bitbucket.org/softozor/shopozor-consumer-frontend
+        default: https://bitbucket.org/softozor/shopozor-vsf-consumer-frontend
         required: true
         regex: "^https?:\\/\\/.+$"
         regexText: Incorrect URL. HTTPS link to Git repository is required.

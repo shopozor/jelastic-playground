@@ -52,11 +52,11 @@ application:
 
   onInstall:
     - install:
-        jps: apis/consumer-api/manifest.jps
+        jps: apis/vsf-consumer-api/manifest.jps
         envName: ${globals.consumerApiEnvName}
         displayName: Consumer API
         settings:
-          gitRepo: https://bitbucket.org/softozor/shopozor-consumer-api
+          gitRepo: https://bitbucket.org/softozor/shopozor-vsf-consumer-api
           gitBranch: master
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
@@ -68,11 +68,11 @@ application:
           port: ${globals.consumerApiPort}
           redisPort: ${globals.redisPort}
     - install:
-        jps: frontends/consumer-frontend/manifest.jps
+        jps: frontends/vsf-consumer-frontend/manifest.jps
         envName: shopozor-consumer-frontend
         displayName: Consumer frontend
         settings:
-          gitRepo: https://bitbucket.org/softozor/shopozor-consumer-frontend
+          gitRepo: https://bitbucket.org/softozor/shopozor-vsf-consumer-frontend
           gitBranch: master
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}

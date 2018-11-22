@@ -84,7 +84,7 @@ Finally, reboot the nginx node:
 
 After the reboot is done, you can browse the address vue-storefront-demo.hidora.com.
 
-Double-check the [Production Setup Documentation](<https://bitbucket.org/softozor/shopozor-consumer-frontend/src/master/doc/Production%20setup%20(WIP).md>) for more details about how to let nginx serve e.g. the assets.
+Double-check the [Production Setup Documentation](<https://bitbucket.org/softozor/shopozor-vsf-consumer-frontend/src/master/doc/Production%20setup%20(WIP).md>) for more details about how to let nginx serve e.g. the assets.
 
 ### Static assets serving
 
