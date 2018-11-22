@@ -51,7 +51,18 @@ application:
         required: true
 
   onInstall:
-    - install:
+    - installVsfConsumerApi
+    - installVsfConsumerFrontend
+    - installAddon:
+        id: letsencrypt
+    - allowAccessToApiFromFrontend
+    - installManagementFrontend
+    # open management-api for access from management-frontend
+    # open consumer-api for access from management-api
+
+  actions:
+    installVsfConsumerApi:
+      install:
         jps: apis/vsf-consumer-api/manifest.jps
         envName: ${globals.consumerApiEnvName}
         displayName: Consumer API
@@ -67,7 +78,8 @@ application:
           accessTokenSecret: ${settings.accessTokenSecret}
           port: ${globals.consumerApiPort}
           redisPort: ${globals.redisPort}
-    - install:
+    installVsfConsumerFrontend:
+      install:
         jps: frontends/vsf-consumer-frontend/manifest.jps
         envName: shopozor-consumer-frontend
         displayName: Consumer frontend
@@ -79,10 +91,8 @@ application:
           apiHost: ${globals.consumerApiHost}
           apiPort: ${globals.consumerApiPort}
           redisPort: ${globals.redisPort}
-    - installAddon:
-        id: letsencrypt
-    - allowAccessToApiFromFrontend
-    - install:
+    installManagementFrontend:
+      install:
         jps: frontends/management-frontend/manifest.jps
         envName: shopozor-management-frontend
         displayName: Management frontend
@@ -92,10 +102,6 @@ application:
           gitUser: ${settings.gitUser}
           gitPassword: ${settings.gitPassword}
           consumerApiHost: ${globals.consumerApiHost}
-    # open management-api for access from management-frontend
-    # open consumer-api for access from management-api
-
-  actions:
     allowAccessToApiFromFrontend:
       - script: ${baseUrl}/apis/scripts/OpenToEnvironment.js
         portToOpen: 8080
