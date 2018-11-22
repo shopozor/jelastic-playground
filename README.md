@@ -3,6 +3,7 @@
 ## Local installation in a virtual machine
 
 - [Development installation of vue-storefront in a virtual machine](/doc/vm/vm-installation.md)
+- [Development installation of saleor in a virtual machine](/doc/vm/vm-installation-saleor.md)
 
 ## Jelastic installation
 
