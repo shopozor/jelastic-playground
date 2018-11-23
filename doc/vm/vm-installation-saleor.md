@@ -29,6 +29,20 @@ Once the password is set, leave that command-line with
 \q
 ```
 
+3. Create the PostgreSQL user `saleor` with password `saleor`:
+
+```
+sudo -u postgres createuser --interactive --pwprompt --superuser saleor
+```
+
+Provide user `saleor` with superuser rights. **Do not do that in production deployments**.
+
+4. Create the PostgreSQL database `saleor`:
+
+```
+sudo -u postgres createdb -O saleor -e saleor
+```
+
 ## Installing Gtk+
 
 ## Installing saleor
@@ -77,27 +91,13 @@ pip install -r requirements.txt
 export SECRET_KEY=theSecretKey
 ```
 
-6. Create the PostgreSQL user `saleor` with password `saleor`:
-
-```
-sudo -u postgres createuser --interactive -P saleor
-```
-
-Provide user `saleor` with superuser rights. **Do not do that in production deployments**.
-
-7. Create the PostgreSQL database `saleor`:
-
-```
-sudo -u postgres createdb -O saleor -e saleor
-```
-
-8. Prepare the database
+6. Prepare the database
 
 ```
 ./manage.py migrate
 ```
 
-9. Install frontend
+7. Install frontend
 
 ```
 npm i
@@ -105,7 +105,7 @@ npm run build-assets
 npm run build-emails
 ```
 
-10. Run the development server:
+8. Run the development server:
 
 ```
 ./manage.py runserver

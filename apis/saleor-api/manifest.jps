@@ -1,0 +1,149 @@
+jpsVersion: 1.3
+jpsType: install
+application:
+  id: shopozor-saleor-api
+  name: Shopozor API
+  version: 0.0
+  baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master
+
+  globals:
+    CONTEXT: /var/www/webroot/ROOT
+
+  settings:
+    fields:
+      - type: spacer
+        caption: API
+      - name: port
+        caption: Listening port
+        default: 8000
+        type: numberpicker
+        min: 0
+        max: 9999
+        editable: true
+        required: true
+      - name: secretKey
+        caption: SECRET_KEY
+        type: string
+        required: true
+      - type: spacer
+        caption: Git repository
+      - name: gitRepo
+        caption: Url
+        type: string
+        default: https://github.com/softozor/saleor
+        required: true
+        regex: "^https?:\\/\\/.+$"
+        regexText: Incorrect URL. HTTPS link to Git repository is required.
+      - name: gitBranch
+        caption: Branch
+        type: string
+        default: master
+        required: true
+      - name: gitUser
+        caption: User
+        type: string
+        required: true
+      - name: gitPassword
+        caption: Password
+        type: string
+        inputType: password
+        required: true
+
+  env:
+    topology:
+      nodes:
+        - nodeGroup: bl
+          nodeType: nginx-dockerized
+          displayName: Node balancing
+          count: 1
+          fixedCloudlets: 1
+          cloudlets: 4
+          env:
+            DOCKER_EXPOSED_PORT: 22,80,443,${settings.port}
+        - nodeGroup: cp
+          nodeType: apache2-python
+          displayName: Application servers
+          count: 1 # TODO: according to the documentation, we need to hack something to make it work for several instances
+          fixedCloudlets: 4
+          cloudlets: 10
+          env:
+            SECRET_KEY: ${settings.secretKey}
+        - nodeGroup: sqldb
+          nodeType: postgresql
+          tag: 10.5
+          displayName: PostgreSQL
+          fixedCloudlets: 1
+          cloudlets: 4
+
+  onInstall:
+    - prepareDatabase
+    - deployRepo
+    # TODO: either get rid of saleor user's password in settings.py or add that password to the user
+
+  actions:
+    prepareDatabase:
+      - backupPermissionsFile
+      - askDatabaseToTrustMe
+      - createDatabase
+      - restorePermissions
+    backupPermissionsFile:
+      - api:
+          - method: jelastic.environment.file.Copy
+            params:
+              src: /var/lib/pgsql/data/pg_hba.conf
+              dest: /var/lib/pgsql/data/pg_hba.conf.orig
+              nodeGroup: sqldb
+      - deleteFileFromDatabaseServer:
+          pathToFile: /var/lib/pgsql/data/pg_hba.conf
+    askDatabaseToTrustMe:
+      - upload:
+          - sourcePath: ${baseUrl}/apis/saleor-api/config/pg_hba.conf
+            destPath: /var/lib/pgsql/data/pg_hba.conf
+            nodeGroup: sqldb
+      - restartDatabaseService
+    createDatabase:
+      cmd [sqldb]:
+        # TODO: this is only for development
+        # in production, we need to provide that user with a password and remove it superuser privileges
+        # --> the settings.py configuration file will need to be adapted
+        - createuser --superuser saleor
+        - createdb --owner=saleor --template=template0 --encoding=utf-8 saleor
+    restorePermissions:
+      - restorePermissionsFile
+      - cleanupBackupFiles
+      - restartDatabaseService
+    restorePermissionsFile:
+      - deleteFileFromDatabaseServer:
+          pathToFile: /var/lib/pgsql/data/pg_hba.conf
+      - api:
+          - method: jelastic.environment.file.Copy
+            params:
+              src: /var/lib/pgsql/data/pg_hba.conf.orig
+              dest: /var/lib/pgsql/data/pg_hba.conf
+              nodeGroup: sqldb
+    cleanupBackupFiles:
+      deleteFileFromDatabaseServer:
+        pathToFile: /var/lib/pgsql/data/pg_hba.conf.orig
+    deleteFileFromDatabaseServer:
+      api:
+        - method: jelastic.environment.file.Delete
+          params:
+            path: ${this.pathToFile}
+            nodeGroup: sqldb
+    restartDatabaseService:
+      restartService:
+        - nodeGroup: sqldb
+    deployRepo:
+      api:
+        - method: environment.vcs.CreateProject
+          params:
+            type: git
+            context: ${globals.CONTEXT}
+            url: ${settings.gitRepo}
+            branch: ${settings.gitBranch}
+            login: ${settings.gitUser}
+            password: ${settings.gitPassword}
+        - method: environment.vcs.Update
+          params:
+            context: ${globals.CONTEXT}
+      nodeGroup: cp
