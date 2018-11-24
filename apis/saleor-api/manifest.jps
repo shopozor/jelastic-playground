@@ -7,7 +7,10 @@ application:
   baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master
 
   globals:
-    CONTEXT: /var/www/webroot/ROOT
+    HOME: /var/www/webroot
+    CONTEXT: ROOT
+    PATH_TO_CONTEXT: ${globals.HOME}/${globals.CONTEXT}
+    SECRET_KEY: ${fn.uuid}
 
   settings:
     fields:
@@ -20,10 +23,6 @@ application:
         min: 0
         max: 9999
         editable: true
-        required: true
-      - name: secretKey
-        caption: SECRET_KEY
-        type: string
         required: true
       - type: spacer
         caption: Git repository
@@ -67,7 +66,7 @@ application:
           fixedCloudlets: 4
           cloudlets: 10
           env:
-            SECRET_KEY: ${settings.secretKey}
+            SECRET_KEY: ${globals.SECRET_KEY}
         - nodeGroup: sqldb
           nodeType: postgresql
           tag: 10.5
@@ -77,15 +76,28 @@ application:
 
   onInstall:
     - prepareDatabase
+    # TODO: add CACHE_URL env var to cp nodes after Redis installation
     - deployRepo
-    # TODO: either get rid of saleor user's password in settings.py or add that password to the user
+    - installApp
+    - startApp
+    # TODO: we need to remove saleor user's superuser privileges
+    # --> maybe remove these privileges at the end of the insallation
 
   actions:
     prepareDatabase:
+      - setDatabaseUrlEnvVar
       - backupPermissionsFile
       - askDatabaseToTrustMe
       - createDatabase
       - restorePermissions
+    setDatabaseUrlEnvVar:
+      api:
+        - method: jelastic.environment.control.AddContainerEnvVars
+          params:
+            nodeGroup: cp
+            vars:
+              # TODO: this will only work if have one single DB
+              DATABASE_URL: postgres://saleor:saleor@${nodes.sqldb.intIP}:5432/saleor
     backupPermissionsFile:
       - api:
           - method: jelastic.environment.file.Copy
@@ -103,10 +115,10 @@ application:
       - restartDatabaseService
     createDatabase:
       cmd [sqldb]:
-        # TODO: this is only for development
-        # in production, we need to provide that user with a password and remove it superuser privileges
-        # --> the settings.py configuration file will need to be adapted
         - createuser --superuser saleor
+        # TODO: saleor's password needs to be asked for in the settings
+        # accordingly, the DATABASE_URL variable needs to be adapted with that new password!
+        - echo "alter user saleor with encrypted password 'saleor';" | psql
         - createdb --owner=saleor --template=template0 --encoding=utf-8 saleor
     restorePermissions:
       - restorePermissionsFile
@@ -147,3 +159,12 @@ application:
           params:
             context: ${globals.CONTEXT}
       nodeGroup: cp
+    installApp:
+      cmd [cp]:
+        - cd ${globals.PATH_TO_CONTEXT}
+        - pip install -r requirements.txt
+        - python ./manage.py migrate
+    startApp:
+      cmd [cp]:
+        - cd ${globals.PATH_TO_CONTEXT}
+        - python ./manage.py runserver
