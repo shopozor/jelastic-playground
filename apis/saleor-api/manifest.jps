@@ -83,6 +83,7 @@ application:
           cloudlets: 4
 
   onInstall:
+    - setServersPortInNginxConf
     - prepareDatabase
     - deployRepo
     - installApp
@@ -90,6 +91,17 @@ application:
     - openFirewall
     - startApp
   actions:
+    # TODO: with wsgi, this will probably not be necessary
+    setServersPortInNginxConf:
+      - forEach(cp:nodes.cp):
+        replaceInFile:
+          nodeType: nginx-dockerized
+          path: /etc/nginx/nginx-jelastic.conf
+          replacements:
+            - pattern: ${@cp.intIP}
+              replacement: ${@cp.intIP}\:${settings.port}
+      - restartService:
+          - nodeGroup: bl
     prepareDatabase:
       - setDatabaseUrlEnvVar
       - backupPermissionsFile
@@ -109,7 +121,9 @@ application:
               params:
                 nodeGroup: cp
                 vars:
-                  ALLOWED_HOSTS: ${@bl.intIP}
+                  # TODO: the hidora envName should not appear in production (not even the domain name)
+                  ALLOWED_HOSTS: ${@bl.intIP},${env.envName}.hidora.com
+                  # at least, we will need to add the ip addresses of both frontends
     backupPermissionsFile:
       - api:
           - method: jelastic.environment.file.Copy
