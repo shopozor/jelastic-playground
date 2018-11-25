@@ -11,6 +11,9 @@ application:
     CONTEXT: ROOT
     PATH_TO_CONTEXT: ${globals.HOME}/${globals.CONTEXT}
     SECRET_KEY: ${fn.uuid}
+    DB_USER_PASSWORD: ${fn.password}
+    DB_USERNAME: saleor
+    DB_NAME: saleor
 
   settings:
     fields:
@@ -62,7 +65,7 @@ application:
         - nodeGroup: cp
           nodeType: apache2-python
           displayName: Application servers
-          count: 1 # TODO: according to the documentation, we need to hack something to make it work for several instances
+          count: 1
           fixedCloudlets: 4
           cloudlets: 10
           env:
@@ -73,31 +76,40 @@ application:
           displayName: PostgreSQL
           fixedCloudlets: 1
           cloudlets: 4
+        - nodeGroup: nosqldb
+          nodeType: redis
+          displayName: Redis cache
+          fixedCloudlets: 1
+          cloudlets: 4
 
   onInstall:
     - prepareDatabase
-    # TODO: add CACHE_URL env var to cp nodes after Redis installation
     - deployRepo
     - installApp
+    - restorePermissions
+    - openFirewall
     - startApp
-    # TODO: we need to remove saleor user's superuser privileges
-    # --> maybe remove these privileges at the end of the insallation
-
   actions:
     prepareDatabase:
       - setDatabaseUrlEnvVar
       - backupPermissionsFile
       - askDatabaseToTrustMe
       - createDatabase
-      - restorePermissions
     setDatabaseUrlEnvVar:
-      api:
-        - method: jelastic.environment.control.AddContainerEnvVars
-          params:
-            nodeGroup: cp
-            vars:
-              # TODO: this will only work if have one single DB
-              DATABASE_URL: postgres://saleor:saleor@${nodes.sqldb.intIP}:5432/saleor
+      - api:
+          - method: jelastic.environment.control.AddContainerEnvVars
+            params:
+              nodeGroup: cp
+              vars:
+                DATABASE_URL: postgres://${globals.DB_USERNAME}:${globals.DB_USER_PASSWORD}@${nodes.sqldb.intIP}:5432/${globals.DB_NAME}
+                CACHE_URL: redis://${nodes.nosqldb.intIP}:6379/0
+      - forEach(bl:nodes.bl):
+          api:
+            - method: jelastic.environment.control.AddContainerEnvVars
+              params:
+                nodeGroup: cp
+                vars:
+                  ALLOWED_HOSTS: ${@bl.intIP}
     backupPermissionsFile:
       - api:
           - method: jelastic.environment.file.Copy
@@ -116,14 +128,16 @@ application:
     createDatabase:
       cmd [sqldb]:
         - createuser --superuser saleor
-        # TODO: saleor's password needs to be asked for in the settings
-        # accordingly, the DATABASE_URL variable needs to be adapted with that new password!
-        - echo "alter user saleor with encrypted password 'saleor';" | psql
+        - echo "alter user ${globals.DB_USERNAME} with encrypted password '${globals.DB_USER_PASSWORD}';" | psql
         - createdb --owner=saleor --template=template0 --encoding=utf-8 saleor
     restorePermissions:
+      - removeSuperUserPermission
       - restorePermissionsFile
       - cleanupBackupFiles
       - restartDatabaseService
+    removeSuperUserPermission:
+      cmd [sqldb]:
+        - echo "alter user ${globals.DB_USERNAME} with NOSUPERUSER;" | psql
     restorePermissionsFile:
       - deleteFileFromDatabaseServer:
           pathToFile: /var/lib/pgsql/data/pg_hba.conf
@@ -164,7 +178,21 @@ application:
         - cd ${globals.PATH_TO_CONTEXT}
         - pip install -r requirements.txt
         - python ./manage.py migrate
+    openFirewall:
+      api:
+        - method: environment.security.AddRule
+          params:
+            nodeGroup: cp
+            rule:
+              protocol: ALL
+              isEnabled: true
+              name: Allow connection to Saleor API
+              action: ALLOW
+              ports: ${settings.port}
+              type: CUSTOM
+              direction: INPUT
+    # TODO: this issues a timeout:
     startApp:
       cmd [cp]:
         - cd ${globals.PATH_TO_CONTEXT}
-        - python ./manage.py runserver
+        - python ./manage.py runserver 0.0.0.0:${settings.port}
