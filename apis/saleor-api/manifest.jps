@@ -82,26 +82,39 @@ application:
           fixedCloudlets: 1
           cloudlets: 4
 
+  # TODO: the listening port is for sure now the port listed in httpd.conf and it is 80 --> need to change it!
+
   onInstall:
-    - setServersPortInNginxConf
+    # - setServersPortInNginxConf
+    - setupWsgi
     - prepareDatabase
     - deployRepo
     - installApp
     - restorePermissions
-    - openFirewall
+    # - openFirewall
     - startApp
   actions:
     # TODO: with wsgi, this will probably not be necessary
-    setServersPortInNginxConf:
-      - forEach(cp:nodes.cp):
-        replaceInFile:
-          nodeType: nginx-dockerized
-          path: /etc/nginx/nginx-jelastic.conf
-          replacements:
-            - pattern: ${@cp.intIP}
-              replacement: ${@cp.intIP}\:${settings.port}
+    # setServersPortInNginxConf:
+    #   - forEach(cp:nodes.cp):
+    #     replaceInFile:
+    #       nodeType: nginx-dockerized
+    #       path: /etc/nginx/nginx-jelastic.conf
+    #       replacements:
+    #         - pattern: ${@cp.intIP}
+    #           replacement: ${@cp.intIP}\:${settings.port}
+    #   - restartService:
+    #       - nodeGroup: bl
+    setupWsgi:
+      - deleteFileFromNodeGroup:
+          pathToFile: /etc/httpd/conf.d/wsgi.conf
+          nodeGroup: cp
+      - upload:
+          - sourcePath: ${baseUrl}/apis/saleor-api/config/wsgi.conf
+            destPath: /etc/httpd/conf.d/wsgi.conf
+            nodeGroup: cp
       - restartService:
-          - nodeGroup: bl
+          nodeGroup: cp
     prepareDatabase:
       - setDatabaseUrlEnvVar
       - backupPermissionsFile
@@ -131,8 +144,9 @@ application:
               src: /var/lib/pgsql/data/pg_hba.conf
               dest: /var/lib/pgsql/data/pg_hba.conf.orig
               nodeGroup: sqldb
-      - deleteFileFromDatabaseServer:
+      - deleteFileFromNodeGroup:
           pathToFile: /var/lib/pgsql/data/pg_hba.conf
+          nodeGroup: sqldb
     askDatabaseToTrustMe:
       - upload:
           - sourcePath: ${baseUrl}/apis/saleor-api/config/pg_hba.conf
@@ -153,8 +167,9 @@ application:
       cmd [sqldb]:
         - echo "alter user ${globals.DB_USERNAME} with NOSUPERUSER;" | psql
     restorePermissionsFile:
-      - deleteFileFromDatabaseServer:
+      - deleteFileFromNodeGroup:
           pathToFile: /var/lib/pgsql/data/pg_hba.conf
+          nodeGroup: sqldb
       - api:
           - method: jelastic.environment.file.Copy
             params:
@@ -162,14 +177,15 @@ application:
               dest: /var/lib/pgsql/data/pg_hba.conf
               nodeGroup: sqldb
     cleanupBackupFiles:
-      deleteFileFromDatabaseServer:
+      deleteFileFromNodeGroup:
         pathToFile: /var/lib/pgsql/data/pg_hba.conf.orig
-    deleteFileFromDatabaseServer:
+        nodeGroup: sqldb
+    deleteFileFromNodeGroup:
       api:
         - method: jelastic.environment.file.Delete
           params:
             path: ${this.pathToFile}
-            nodeGroup: sqldb
+            nodeGroup: ${this.nodeGroup}
     restartDatabaseService:
       restartService:
         - nodeGroup: sqldb
@@ -192,21 +208,23 @@ application:
         - cd ${globals.PATH_TO_CONTEXT}
         - pip install -r requirements.txt
         - python ./manage.py migrate
-    openFirewall:
-      api:
-        - method: environment.security.AddRule
-          params:
-            nodeGroup: cp
-            rule:
-              protocol: ALL
-              isEnabled: true
-              name: Allow connection to Saleor API
-              action: ALLOW
-              ports: ${settings.port}
-              type: CUSTOM
-              direction: INPUT
-    # TODO: this issues a timeout:
+    # openFirewall:
+    #   api:
+    #     - method: environment.security.AddRule
+    #       params:
+    #         nodeGroup: cp
+    #         rule:
+    #           protocol: ALL
+    #           isEnabled: true
+    #           name: Allow connection to Saleor API
+    #           action: ALLOW
+    #           ports: ${settings.port}
+    #           type: CUSTOM
+    #           direction: INPUT
     startApp:
-      cmd [cp]:
-        - cd ${globals.PATH_TO_CONTEXT}
-        - python ./manage.py runserver 0.0.0.0:${settings.port}
+      # TODO: this issues a timeout:
+      # cmd [cp]:
+      #   - cd ${globals.PATH_TO_CONTEXT}
+      #   - python ./manage.py runserver 0.0.0.0:${settings.port}
+      restartService:
+        nodeGroup: cp
