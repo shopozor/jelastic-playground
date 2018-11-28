@@ -13,7 +13,7 @@ framework.
 """
 import os, sys
 
-activationScriptFilename = os.path.join(os.environ['PATH_TO_VIRTUAL_ENV'], 'bin', 'activate_this.py')
+activationScriptFilename = os.path.join('PATH_TO_VIRTUAL_ENV_PLACEHOLDER', 'bin', 'activate_this.py')
 try:
   # the PATH_TO_VIRTUAL_ENV variable is defined by our jps
   exec(open(activationScriptFilename).read())
@@ -22,6 +22,8 @@ except IOError:
 
 # TODO: is this line really necessary?
 sys.path.append(os.path.join(os.environ['HOME'], 'ROOT'))
+os.environ['SECRET_KEY'] = 'SECRET_KEY_PLACEHOLDER'
+os.environ['ALLOWED_HOSTS'] = 'ALLOWED_HOSTS_PLACEHOLDER'
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'saleor.settings')
 
