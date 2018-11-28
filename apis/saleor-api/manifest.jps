@@ -70,7 +70,7 @@ application:
         - nodeGroup: cp
           nodeType: apache2-python
           displayName: Application servers
-          count: 1
+          count: 2
           fixedCloudlets: 4
           cloudlets: 10
           env:
