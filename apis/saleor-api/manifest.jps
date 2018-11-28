@@ -76,6 +76,8 @@ application:
           env:
             # This is required for the migration step
             SECRET_KEY: ${globals.SECRET_KEY}
+            PATH_TO_VIRTUAL_ENV: ${globals.PATH_TO_VIRTUAL_ENV}
+            DOMAIN_NAMES: ${env.envName}.hidora.com
         - nodeGroup: sqldb
           nodeType: postgresql
           tag: 10.5
@@ -157,10 +159,10 @@ application:
           - sourcePath: ${baseUrl}/apis/saleor-api/config/wsgi.py
             destPath: ${globals.PATH_TO_CONTEXT}/wsgi.py
         nodeGroup: cp
-      - script: ${baseUrl}/apis/saleor-api/scripts/ReplaceWsgiPlaceholders.js
-        pathToFile: ${globals.PATH_TO_CONTEXT}/wsgi.py
-        pathToVirtualEnv: ${globals.PATH_TO_VIRTUAL_ENV}
-        secretKey: ${globals.SECRET_KEY}
-        domainNames: ${env.envName}.hidora.com
+      - forEach(nodes.cp):
+          script: ${baseUrl}/apis/saleor-api/scripts/ReplaceWsgiPlaceholders.js
+          pathToFile: ${globals.PATH_TO_CONTEXT}/wsgi.py
+          domainNames: ${env.envName}.hidora.com
+          nodeId: ${@i.id}
       - restartService:
           nodeGroup: cp

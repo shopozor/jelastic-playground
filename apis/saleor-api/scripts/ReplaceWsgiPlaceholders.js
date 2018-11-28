@@ -53,16 +53,41 @@ function replaceInBody(path, pattern, replacement) {
   )
 }
 
-function replaceWsgiPlaceholders(
-  pathToFile,
-  pathToVirtualEnv,
-  secretKey,
-  domainNames,
-  databaseUrl,
-  cacheUrl
-) {
-  replaceInBody(pathToFile, 'PATH_TO_VIRTUAL_ENV_PLACEHOLDER', pathToVirtualEnv)
-  replaceInBody(pathToFile, 'SECRET_KEY_PLACEHOLDER', secretKey)
+function checkJelasticResponse(response, errorMsg) {
+  if (!response || response.result !== 0) {
+    throw errorMsg + ': ' + response
+  }
+}
+
+function getContainerEnvVars(nodeId) {
+  const resp = jelastic.environment.control.GetContainerEnvVars(
+    '${env.envName}',
+    session,
+    nodeId
+  )
+  checkJelasticResponse(
+    resp,
+    'Getting container env vars by nodeId <' + nodeId + '> failed!'
+  )
+  return resp.object
+}
+
+function getEnvVarValue(nodeId, key) {
+  const resp = getContainerEnvVars(nodeId)
+  return resp[key]
+}
+
+function replaceWsgiPlaceholders(nodeId, pathToFile, domainNames) {
+  replaceInBody(
+    pathToFile,
+    'PATH_TO_VIRTUAL_ENV_PLACEHOLDER',
+    getEnvVarValue(nodeId, 'PATH_TO_VIRTUAL_ENV')
+  )
+  replaceInBody(
+    pathToFile,
+    'SECRET_KEY_PLACEHOLDER',
+    getEnvVarValue(nodeId, 'SECRET_KEY')
+  )
   replaceInBody(
     pathToFile,
     'ALLOWED_HOSTS_PLACEHOLDER',
@@ -71,17 +96,22 @@ function replaceWsgiPlaceholders(
       .concat(getListOfLoadBalancerNodeIPs())
       .toString()
   )
-  replaceInBody(pathToFile, 'DATABASE_URL_PLACEHOLDER', databaseUrl)
-  replaceInBody(pathToFile, 'CACHE_URL_PLACEHOLDER', cacheUrl)
+  replaceInBody(
+    pathToFile,
+    'DATABASE_URL_PLACEHOLDER',
+    getEnvVarValue(nodeId, 'DATABASE_URL')
+  )
+  replaceInBody(
+    pathToFile,
+    'CACHE_URL_PLACEHOLDER',
+    getEnvVarValue(nodeId, 'CACHE_URL')
+  )
   const SUCCESS_RESPONSE = { result: 0 }
   return SUCCESS_RESPONSE
 }
 
 return replaceWsgiPlaceholders(
+  getParam('nodeId'),
   getParam('pathToFile'),
-  getParam('pathToVirtualEnv'),
-  getParam('secretKey'),
-  getParam('domainNames'),
-  getParam('databaseUrl'),
-  getParam('cacheUrl')
+  getParam('domainNames')
 )
