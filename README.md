@@ -9,3 +9,4 @@
 
 - [Manual consumer frontend installation via dashboard](/doc/manual-installation/manual-consumer-frontend.md)
 - [Manual consumer api installation via dashboard](/doc/manual-installation/manual-consumer-api.md)
+- [Troubleshooting on saleor with apache2-python](/doc/troubleshooting/saleor-apache2-python.md)

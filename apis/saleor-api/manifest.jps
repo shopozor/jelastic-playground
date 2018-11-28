@@ -2,7 +2,7 @@ jpsVersion: 1.3
 jpsType: install
 application:
   id: shopozor-saleor-api
-  name: Shopozor API
+  name: Saleor API
   version: 0.0
   baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master
 
@@ -11,22 +11,26 @@ application:
     CONTEXT: ROOT
     PATH_TO_CONTEXT: ${globals.HOME}/${globals.CONTEXT}
     SECRET_KEY: ${fn.uuid}
-    DB_USER_PASSWORD: ${fn.password}
+    DB_USER_PASSWORD: ${fn.password(10)}
     DB_USERNAME: saleor
     DB_NAME: saleor
+    PYTHON_VIRTUAL_ENV: env
+    PATH_TO_VIRTUAL_ENV: ${globals.HOME}/${globals.PYTHON_VIRTUAL_ENV}
+    PG_PASSWORD: ${fn.password(10)}
 
   settings:
     fields:
       - type: spacer
         caption: API
-      - name: port
-        caption: Listening port
-        default: 8000
-        type: numberpicker
-        min: 0
-        max: 9999
-        editable: true
-        required: true
+      # for some reason, I was not able to set the port
+      # - name: port
+      #   caption: Listening port
+      #   default: 8000
+      #   type: numberpicker
+      #   min: 0
+      #   max: 9999
+      #   editable: true
+      #   required: true
       - type: spacer
         caption: Git repository
       - name: gitRepo
@@ -61,7 +65,8 @@ application:
           fixedCloudlets: 1
           cloudlets: 4
           env:
-            DOCKER_EXPOSED_PORT: 22,80,443,${settings.port}
+            DOCKER_EXPOSED_PORT: 22,80,443
+            SECRET_KEY: ${globals.SECRET_KEY}
         - nodeGroup: cp
           nodeType: apache2-python
           displayName: Application servers
@@ -69,6 +74,7 @@ application:
           fixedCloudlets: 4
           cloudlets: 10
           env:
+            # This is required for the migration step
             SECRET_KEY: ${globals.SECRET_KEY}
         - nodeGroup: sqldb
           nodeType: postgresql
@@ -82,43 +88,23 @@ application:
           fixedCloudlets: 1
           cloudlets: 4
 
-  # TODO: the listening port is for sure now the port listed in httpd.conf and it is 80 --> need to change it!
-
   onInstall:
-    # - setServersPortInNginxConf
-    - setupWsgi
     - prepareDatabase
     - deployRepo
-    - installApp
+    - createVirtualEnv
+    - migrateDB
     - restorePermissions
-    # - openFirewall
-    - startApp
+    - setupWsgi
   actions:
-    # TODO: with wsgi, this will probably not be necessary
-    # setServersPortInNginxConf:
-    #   - forEach(cp:nodes.cp):
-    #     replaceInFile:
-    #       nodeType: nginx-dockerized
-    #       path: /etc/nginx/nginx-jelastic.conf
-    #       replacements:
-    #         - pattern: ${@cp.intIP}
-    #           replacement: ${@cp.intIP}\:${settings.port}
-    #   - restartService:
-    #       - nodeGroup: bl
-    setupWsgi:
-      - deleteFileFromNodeGroup:
-          pathToFile: /etc/httpd/conf.d/wsgi.conf
-          nodeGroup: cp
-      - upload:
-          - sourcePath: ${baseUrl}/apis/saleor-api/config/wsgi.conf
-            destPath: /etc/httpd/conf.d/wsgi.conf
-            nodeGroup: cp
-      - restartService:
-          nodeGroup: cp
+    setupServerListeningConf:
+      - replaceInFile:
+        nodeType: apache2-python
+        path: /etc/httpd/conf/httpd.conf
+        replacements:
+          - pattern: Listen \[\:\:\]\:80
+            replacement: Listen 80
     prepareDatabase:
       - setDatabaseUrlEnvVar
-      - backupPermissionsFile
-      - askDatabaseToTrustMe
       - createDatabase
     setDatabaseUrlEnvVar:
       - api:
@@ -128,67 +114,18 @@ application:
               vars:
                 DATABASE_URL: postgres://${globals.DB_USERNAME}:${globals.DB_USER_PASSWORD}@${nodes.sqldb.intIP}:5432/${globals.DB_NAME}
                 CACHE_URL: redis://${nodes.nosqldb.intIP}:6379/0
-      - forEach(bl:nodes.bl):
-          api:
-            - method: jelastic.environment.control.AddContainerEnvVars
-              params:
-                nodeGroup: cp
-                vars:
-                  # TODO: the hidora envName should not appear in production (not even the domain name)
-                  ALLOWED_HOSTS: ${@bl.intIP},${env.envName}.hidora.com
-                  # at least, we will need to add the ip addresses of both frontends
-    backupPermissionsFile:
-      - api:
-          - method: jelastic.environment.file.Copy
-            params:
-              src: /var/lib/pgsql/data/pg_hba.conf
-              dest: /var/lib/pgsql/data/pg_hba.conf.orig
-              nodeGroup: sqldb
-      - deleteFileFromNodeGroup:
-          pathToFile: /var/lib/pgsql/data/pg_hba.conf
-          nodeGroup: sqldb
-    askDatabaseToTrustMe:
-      - upload:
-          - sourcePath: ${baseUrl}/apis/saleor-api/config/pg_hba.conf
-            destPath: /var/lib/pgsql/data/pg_hba.conf
-            nodeGroup: sqldb
-      - restartDatabaseService
     createDatabase:
-      cmd [sqldb]:
-        - createuser --superuser saleor
-        - echo "alter user ${globals.DB_USERNAME} with encrypted password '${globals.DB_USER_PASSWORD}';" | psql
-        - createdb --owner=saleor --template=template0 --encoding=utf-8 saleor
+      cmd[sqldb]:
+        - jem passwd set -p ${globals.PG_PASSWORD}
+        - export PGPASSWORD='${globals.PG_PASSWORD}'
+        - psql -U webadmin -d postgres -c "CREATE ROLE ${globals.DB_USERNAME} PASSWORD '${globals.DB_USER_PASSWORD}' SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;"
+        - psql -U webadmin -d postgres -c "CREATE DATABASE ${globals.DB_NAME} OWNER ${globals.DB_USERNAME} ENCODING 'utf-8' TEMPLATE template0;"
+      user: root
     restorePermissions:
-      - removeSuperUserPermission
-      - restorePermissionsFile
-      - cleanupBackupFiles
-      - restartDatabaseService
-    removeSuperUserPermission:
-      cmd [sqldb]:
-        - echo "alter user ${globals.DB_USERNAME} with NOSUPERUSER;" | psql
-    restorePermissionsFile:
-      - deleteFileFromNodeGroup:
-          pathToFile: /var/lib/pgsql/data/pg_hba.conf
-          nodeGroup: sqldb
-      - api:
-          - method: jelastic.environment.file.Copy
-            params:
-              src: /var/lib/pgsql/data/pg_hba.conf.orig
-              dest: /var/lib/pgsql/data/pg_hba.conf
-              nodeGroup: sqldb
-    cleanupBackupFiles:
-      deleteFileFromNodeGroup:
-        pathToFile: /var/lib/pgsql/data/pg_hba.conf.orig
-        nodeGroup: sqldb
-    deleteFileFromNodeGroup:
-      api:
-        - method: jelastic.environment.file.Delete
-          params:
-            path: ${this.pathToFile}
-            nodeGroup: ${this.nodeGroup}
-    restartDatabaseService:
-      restartService:
-        - nodeGroup: sqldb
+      - cmd [sqldb]:
+          - export PGPASSWORD='${globals.PG_PASSWORD}'
+          - psql -U webadmin -d postgres -c "ALTER USER ${globals.DB_USERNAME} WITH NOSUPERUSER;"
+        user: root
     deployRepo:
       api:
         - method: environment.vcs.CreateProject
@@ -203,28 +140,27 @@ application:
           params:
             context: ${globals.CONTEXT}
       nodeGroup: cp
-    installApp:
+    createVirtualEnv:
+      - cmd[cp]:
+          - cd ~
+          - virtualenv ${globals.PYTHON_VIRTUAL_ENV}
+          - source ${globals.PATH_TO_VIRTUAL_ENV}/bin/activate
+          - cd ${globals.PATH_TO_CONTEXT}
+          - pip install -r requirements.txt
+    migrateDB:
       cmd [cp]:
         - cd ${globals.PATH_TO_CONTEXT}
-        - pip install -r requirements.txt
+        - source ${globals.PATH_TO_VIRTUAL_ENV}/bin/activate
         - python ./manage.py migrate
-    # openFirewall:
-    #   api:
-    #     - method: environment.security.AddRule
-    #       params:
-    #         nodeGroup: cp
-    #         rule:
-    #           protocol: ALL
-    #           isEnabled: true
-    #           name: Allow connection to Saleor API
-    #           action: ALLOW
-    #           ports: ${settings.port}
-    #           type: CUSTOM
-    #           direction: INPUT
-    startApp:
-      # TODO: this issues a timeout:
-      # cmd [cp]:
-      #   - cd ${globals.PATH_TO_CONTEXT}
-      #   - python ./manage.py runserver 0.0.0.0:${settings.port}
-      restartService:
+    setupWsgi:
+      - upload:
+          - sourcePath: ${baseUrl}/apis/saleor-api/config/wsgi.py
+            destPath: ${globals.PATH_TO_CONTEXT}/wsgi.py
         nodeGroup: cp
+      - script: ${baseUrl}/apis/saleor-api/scripts/ReplaceWsgiPlaceholders.js
+        pathToFile: ${globals.PATH_TO_CONTEXT}/wsgi.py
+        pathToVirtualEnv: ${globals.PATH_TO_VIRTUAL_ENV}
+        secretKey: ${globals.SECRET_KEY}
+        domainNames: ${env.envName}.hidora.com
+      - restartService:
+          nodeGroup: cp

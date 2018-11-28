@@ -1,85 +1,87 @@
 function checkJelasticResponse(response, errorMsg) {
   if (!response || response.result !== 0) {
-    throw errorMsg + ": " + response;
+    throw errorMsg + ': ' + response
   }
 }
 
 function getNodesInfo(envName) {
-  const resp = jelastic.environment.control.GetEnvInfo(envName, session);
+  const resp = jelastic.environment.control.GetEnvInfo(envName, session)
   checkJelasticResponse(
     resp,
-    "Cannot get environment info of environment <" +
+    'Cannot get environment info of environment <' +
       envName +
-      ">, session <" +
+      '>, session <' +
       session +
-      ">"
-  );
-  return resp.nodes;
+      '>'
+  )
+  return resp.nodes
 }
 
 function getListOfLoadBalancerNodeIPs() {
-  var result = [];
-  const nodes = getNodesInfo(getParam("TARGET_APPID"));
+  var result = []
+  const nodes = getNodesInfo(getParam('TARGET_APPID'))
   for (var i = 0; i < nodes.length; ++i) {
-    var node = nodes[i];
-    if (node.nodeType == "nginx-dockerized") {
-      result.push(node.intIP);
+    var node = nodes[i]
+    if (node.nodeType == 'nginx-dockerized') {
+      result.push(node.intIP)
     }
   }
-  return result;
+  return result
 }
 
 function replaceInBody(path, pattern, replacement) {
-  const APPID = getParam("TARGET_APPID");
+  const APPID = getParam('TARGET_APPID')
   const resp = jelastic.environment.file.ReplaceInBody(
     APPID,
     session,
     path,
     pattern,
     replacement,
-    "", // nth
-    "", // nodeType
-    "cp"
-  );
+    '', // nth
+    '', // nodeType
+    'cp'
+  )
   checkJelasticResponse(
     resp,
-    "Replacing pattern <" +
+    'Replacing pattern <' +
       pattern +
-      "> with <" +
+      '> with <' +
       replacement +
-      "> in file <" +
+      '> in file <' +
       path +
-      "> failed!"
-  );
+      '> failed!'
+  )
 }
 
 function replaceWsgiPlaceholders(
   pathToFile,
   pathToVirtualEnv,
   secretKey,
-  domainNames
+  domainNames,
+  databaseUrl,
+  cacheUrl
 ) {
+  replaceInBody(pathToFile, 'PATH_TO_VIRTUAL_ENV_PLACEHOLDER', pathToVirtualEnv)
+  replaceInBody(pathToFile, 'SECRET_KEY_PLACEHOLDER', secretKey)
   replaceInBody(
     pathToFile,
-    "PATH_TO_VIRTUAL_ENV_PLACEHOLDER",
-    pathToVirtualEnv
-  );
-  replaceInBody(pathToFile, "SECRET_KEY_PLACEHOLDER", secretKey);
-  replaceInBody(
-    pathToFile,
-    "ALLOWED_HOSTS_PLACEHOLDER",
+    'ALLOWED_HOSTS_PLACEHOLDER',
     domainNames
-      .split(",")
+      .split(',')
       .concat(getListOfLoadBalancerNodeIPs())
       .toString()
-  );
-  const SUCCESS_RESPONSE = { result: 0 };
-  return SUCCESS_RESPONSE;
+  )
+  replaceInBody(pathToFile, 'DATABASE_URL_PLACEHOLDER', databaseUrl)
+  replaceInBody(pathToFile, 'CACHE_URL_PLACEHOLDER', cacheUrl)
+  const SUCCESS_RESPONSE = { result: 0 }
+  return SUCCESS_RESPONSE
 }
 
 return replaceWsgiPlaceholders(
-  getParam("pathToFile"),
-  getParam("pathToVirtualEnv"),
-  getParam("secretKey"),
-  getParam("domainNames")
-);
+  getParam('pathToFile'),
+  getParam('pathToVirtualEnv'),
+  getParam('secretKey'),
+  getParam('domainNames'),
+  getParam('databaseUrl'),
+  getParam('cacheUrl')
+)
