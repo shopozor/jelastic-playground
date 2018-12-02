@@ -85,6 +85,12 @@ application:
             context: ${globals.NODEJS_CONTEXT}
       nodeGroup: cp
     startApp:
-      cmd:
-        - curl -fsSL ${baseUrl}/scripts/StartApp.sh | /bin/bash -s ${globals.NODEJS_PATH_TO_CONTEXT}
-      nodeGroup: cp
+      # using the StartApp.sh script doesn't work for some reason
+      # it seems like the build and run part must be split into two
+      # distinct commands like here:
+      - cmd [cp]:
+          - cd ${globals.NODEJS_PATH_TO_CONTEXT}
+          - yarn
+          - yarn build
+      - restartNodes:
+          - nodeGroup: cp
