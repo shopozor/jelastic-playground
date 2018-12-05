@@ -2,13 +2,10 @@
 
 ## Installing postgres
 
-1. Install postgresql software (assuming we are using Ubuntu Bionic 18.04):
+1. Install postgresql software (Version 9.5 on Ubuntu 16.04) : 
 
 ```
-deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-sudo apt update
-sudo apt install postgresql-10 postgresql-client-10 postgresql-client-common
+sudo apt-get install postgresql
 ```
 
 2. Define a password for the postgres user, following [this answer](https://serverfault.com/questions/110154/whats-the-default-superuser-username-password-for-postgres-after-a-new-install):
@@ -43,9 +40,17 @@ Provide user `saleor` with superuser rights. **Do not do that in production depl
 sudo -u postgres createdb -O saleor -e saleor
 ```
 
+## Installing Python 3.6
+See https://askubuntu.com/questions/865554/how-do-i-install-python-3-6-using-apt-get
+```{bash}
+sudo add-apt-repository ppa:jonathonf/python-3.6
+sudo apt update
+sudo apt install python3.6 python3.6-dev
+```
+
 ## Installing Gtk+
 
-## Installing saleor
+## Installing saleor 
 
 Proceed with the following steps, [documented by saleor](https://saleor.readthedocs.io/en/latest/gettingstarted/installation-linux.html),
 
@@ -53,17 +58,12 @@ Proceed with the following steps, [documented by saleor](https://saleor.readthed
 
 ```
 sudo apt install build-essential python3-venv python3-dev python3-pip python3-cffi libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
-pip3 install virtualenvwrapper
 ```
 
-Following the [advice](https://medium.com/@gitudaniel/installing-virtualenvwrapper-for-python3-ad3dfea7c717), extend the `~/.bashrc` file with
+2. Install the `pipenv` package using any method, for exemple with `pip` :
 
-```
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/workspace
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-export VIRTUALENVWRAPPER_VIRTUALENV=$HOME/.local/bin/virtualenv
-source $HOME/.local/bin/virtualenvwrapper.sh
+```{bash}
+pip3 install pipenv
 ```
 
 2. Clone our forked saleor repository:
@@ -72,18 +72,18 @@ source $HOME/.local/bin/virtualenvwrapper.sh
 git clone https://github.com/softozor/saleor.git
 ```
 
-3. Create a virtual environment (see [documentation](https://virtualenvwrapper.readthedocs.io/en/latest/install.html#quick-start)) in the saleor repo:
 
+4. Install saleor requirements and let `pipenv` automaticaly create a virtualenv
 ```
 cd saleor
-mkvirtualenv saleor-env
+pipenv install
 ```
 
-4. Install saleor requirements
+5. Activate the virtualenv from within newly created `saleor` directory :
+```{bash}
+pipenv shell
+```
 
-```
-pip install -r requirements.txt
-```
 
 5. Add secret key to `$VIRTUAL_ENV/bin/postactivate` script (cf. [this answer](https://stackoverflow.com/questions/9554087/setting-an-environment-variable-in-virtualenv)):
 
