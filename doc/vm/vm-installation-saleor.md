@@ -110,7 +110,3 @@ npm run build-emails
 ```
 ./manage.py runserver
 ```
-
-## Graphiql
-
-In order to have graphiql working properly, follow [this advice](https://docs.google.com/document/d/1vsqwh_yf2shM_pJbx18wYDhCHwEbsHaEpK0b5aAZLBU/edit#heading=h.9cbyxshl67es).
