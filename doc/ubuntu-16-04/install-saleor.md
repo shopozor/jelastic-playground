@@ -45,7 +45,7 @@ See https://askubuntu.com/questions/865554/how-do-i-install-python-3-6-using-apt
 ```{bash}
 sudo add-apt-repository ppa:jonathonf/python-3.6
 sudo apt update
-sudo apt install python3.6
+sudo apt install python3.6 python3.6-dev
 ```
 
 ## Installing Gtk+
