@@ -1,0 +1,59 @@
+jpsVersion: 1.3
+jpsType: update
+application:
+  id: update-saleor-api-for-testing
+  name: Saleor API Testing
+  version: 0.0
+  baseUrl: https://raw.githubusercontent.com/softozor/shopozor-configuration/master
+
+  globals:
+    HOME: /var/www/webroot
+    CONTEXT: ROOT
+    PATH_TO_CONTEXT: ${globals.HOME}/${globals.CONTEXT}
+    PYTHON_VIRTUAL_ENV: env
+    PATH_TO_VIRTUAL_ENV: ${globals.HOME}/${globals.PYTHON_VIRTUAL_ENV}
+    TEST_DATA_FILENAME: test-data.json
+
+  settings:
+    fields:
+      - type: spacer
+        caption: PostgreSQL
+      - name: pg_password
+        caption: webadmin pwd
+        type: password
+        required: true
+      - name: pg_db_name
+        caption: DB name
+        type: string
+        default: saleor
+        required: true
+      - name: pg_db_owner
+        caption: DB owner
+        type: string
+        default: saleor
+        required: true
+
+  onInstall:
+    # TODO: empty Redis cache
+    - cleanupDB
+    - migrateDB
+    - populateDB
+
+  actions:
+    cleanupDB:
+      cmd [sqldb]:
+        - export PGPASSWORD='${settings.pg_password}'
+        - psql -U webadmin -d postgres -c "DROP DATABASE ${settings.pg_db_name};"
+        - psql -U webadmin -d postgres -c "CREATE DATABASE ${settings.pg_db_name} OWNER ${settings.pg_db_owner} ENCODING 'utf-8' TEMPLATE template0;"
+      user: root
+    migrateDB:
+      cmd [cp]:
+        - cd ${globals.PATH_TO_CONTEXT}
+        - source ${globals.PATH_TO_VIRTUAL_ENV}/bin/activate
+        - python ./manage.py migrate
+    populateDB:
+      cmd [cp]:
+        - cd ${globals.PATH_TO_CONTEXT}
+        - source ${globals.PATH_TO_VIRTUAL_ENV}/bin/activate
+        - wget ${baseUrl}/apis/saleor-api/config/${globals.TEST_DATA_FILENAME}
+        - python ./manage.py loaddata ${globals.TEST_DATA_FILENAME}

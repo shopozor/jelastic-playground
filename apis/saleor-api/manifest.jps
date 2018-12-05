@@ -97,7 +97,6 @@ application:
     - deployRepo
     - createVirtualEnv
     - migrateDB
-    # - populateDB
     - restorePermissions
     - setupWsgi
   actions:
@@ -159,11 +158,6 @@ application:
         - cd ${globals.PATH_TO_CONTEXT}
         - source ${globals.PATH_TO_VIRTUAL_ENV}/bin/activate
         - python ./manage.py migrate
-    # populateDB:
-    #   cmd [cp]:
-    #     - cd ${globals.PATH_TO_CONTEXT}
-    #     - source ${globals.PATH_TO_VIRTUAL_ENV}/bin/activate
-    #     - python ./manage.py populatedb --createsuperuser
     setupWsgi:
       - upload:
           - sourcePath: ${baseUrl}/apis/saleor-api/config/wsgi.py
