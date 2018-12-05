@@ -99,6 +99,7 @@ application:
     - migrateDB
     - restorePermissions
     - setupWsgi
+    - sendEmailWithPasswords
   actions:
     prepareDatabase:
       - setDatabaseUrlEnvVar
@@ -170,3 +171,11 @@ application:
           nodeId: ${@i.id}
       - restartService:
           nodeGroup: cp
+    sendEmailWithPasswords:
+      return:
+        result: success
+        email: |
+          # PostgreSQL
+          **webadmin**: ${globals.PG_PASSWORD}
+          # Redis    
+          **admin**: ${globals.REDIS_PASSWORD}

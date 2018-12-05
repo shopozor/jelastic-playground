@@ -20,7 +20,8 @@ application:
         caption: PostgreSQL
       - name: pg_password
         caption: webadmin pwd
-        type: password
+        type: string
+        inputType: password
         required: true
       - name: pg_db_name
         caption: DB name
@@ -34,19 +35,38 @@ application:
         required: true
 
   onInstall:
-    # TODO: empty Redis cache
     - cleanupDB
     - migrateDB
     - populateDB
 
   actions:
     cleanupDB:
+      - emptyRedisCache
+      - emptyPostgres
+    emptyRedisCache:
+      cmd [nosqldb]:
+        - redis-cli -a $(tail -1 /etc/redis.conf | cut -d " " -f 2) FLUSHDB
+    emptyPostgres:
       cmd [sqldb]:
         - export PGPASSWORD='${settings.pg_password}'
         - psql -U webadmin -d postgres -c "DROP DATABASE ${settings.pg_db_name};"
         - psql -U webadmin -d postgres -c "CREATE DATABASE ${settings.pg_db_name} OWNER ${settings.pg_db_owner} ENCODING 'utf-8' TEMPLATE template0;"
       user: root
     migrateDB:
+      - setSuperUserPermissions
+      - doMigrateDB
+      - unsetSuperUserPermissions
+    setSuperUserPermissions:
+      cmd [sqldb]:
+        - export PGPASSWORD='${settings.pg_password}'
+        - psql -U webadmin -d postgres -c "ALTER USER ${settings.pg_db_name} WITH SUPERUSER;"
+      user: root
+    unsetSuperUserPermissions:
+      cmd [sqldb]:
+        - export PGPASSWORD='${settings.pg_password}'
+        - psql -U webadmin -d postgres -c "ALTER USER ${settings.pg_db_name} WITH NOSUPERUSER;"
+      user: root
+    doMigrateDB:
       cmd [cp]:
         - cd ${globals.PATH_TO_CONTEXT}
         - source ${globals.PATH_TO_VIRTUAL_ENV}/bin/activate
