@@ -11,12 +11,13 @@ application:
     CONTEXT: ROOT
     PATH_TO_CONTEXT: ${globals.HOME}/${globals.CONTEXT}
     SECRET_KEY: ${fn.uuid}
-    DB_USER_PASSWORD: ${fn.password(10)}
-    DB_USERNAME: saleor
-    DB_NAME: saleor
+    PG_USER_PASSWORD: ${fn.password(10)}
+    PG_DB_USERNAME: saleor
+    PG_DB_NAME: saleor
+    PG_PASSWORD: ${fn.password(10)}
+    REDIS_PASSWORD: ${fn.password(10)}
     PYTHON_VIRTUAL_ENV: env
     PATH_TO_VIRTUAL_ENV: ${globals.HOME}/${globals.PYTHON_VIRTUAL_ENV}
-    PG_PASSWORD: ${fn.password(10)}
 
   settings:
     fields:
@@ -70,7 +71,7 @@ application:
         - nodeGroup: cp
           nodeType: apache2-python
           displayName: Application servers
-          count: 2
+          count: 1
           fixedCloudlets: 4
           cloudlets: 10
           env:
@@ -91,42 +92,46 @@ application:
           cloudlets: 4
 
   onInstall:
+    - setPasswordOnRedisNode
     - prepareDatabase
     - deployRepo
     - createVirtualEnv
     - migrateDB
+    # - populateDB
     - restorePermissions
     - setupWsgi
   actions:
-    setupServerListeningConf:
-      - replaceInFile:
-        nodeType: apache2-python
-        path: /etc/httpd/conf/httpd.conf
-        replacements:
-          - pattern: Listen \[\:\:\]\:80
-            replacement: Listen 80
     prepareDatabase:
       - setDatabaseUrlEnvVar
       - createDatabase
+    setPasswordOnRedisNode:
+      - replaceInFile:
+          path: /etc/redis.conf
+          replacements:
+            - pattern: requirepass\ .*
+              replacement: requirepass ${globals.REDIS_PASSWORD}
+          nodeType: redis
+      - restartService:
+          - nodeType: redis
     setDatabaseUrlEnvVar:
       - api:
           - method: jelastic.environment.control.AddContainerEnvVars
             params:
               nodeGroup: cp
               vars:
-                DATABASE_URL: postgres://${globals.DB_USERNAME}:${globals.DB_USER_PASSWORD}@${nodes.sqldb.intIP}:5432/${globals.DB_NAME}
-                CACHE_URL: redis://${nodes.nosqldb.intIP}:6379/0
+                DATABASE_URL: postgres://${globals.PG_DB_USERNAME}:${globals.PG_USER_PASSWORD}@${nodes.sqldb.intIP}:5432/${globals.PG_DB_NAME}
+                CACHE_URL: redis://:${globals.REDIS_PASSWORD}@${nodes.nosqldb.intIP}:6379/0
     createDatabase:
       cmd[sqldb]:
         - jem passwd set -p ${globals.PG_PASSWORD}
         - export PGPASSWORD='${globals.PG_PASSWORD}'
-        - psql -U webadmin -d postgres -c "CREATE ROLE ${globals.DB_USERNAME} PASSWORD '${globals.DB_USER_PASSWORD}' SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;"
-        - psql -U webadmin -d postgres -c "CREATE DATABASE ${globals.DB_NAME} OWNER ${globals.DB_USERNAME} ENCODING 'utf-8' TEMPLATE template0;"
+        - psql -U webadmin -d postgres -c "CREATE ROLE ${globals.PG_DB_USERNAME} PASSWORD '${globals.PG_USER_PASSWORD}' SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN;"
+        - psql -U webadmin -d postgres -c "CREATE DATABASE ${globals.PG_DB_NAME} OWNER ${globals.PG_DB_USERNAME} ENCODING 'utf-8' TEMPLATE template0;"
       user: root
     restorePermissions:
       - cmd [sqldb]:
           - export PGPASSWORD='${globals.PG_PASSWORD}'
-          - psql -U webadmin -d postgres -c "ALTER USER ${globals.DB_USERNAME} WITH NOSUPERUSER;"
+          - psql -U webadmin -d postgres -c "ALTER USER ${globals.PG_DB_USERNAME} WITH NOSUPERUSER;"
         user: root
     deployRepo:
       api:
@@ -154,6 +159,11 @@ application:
         - cd ${globals.PATH_TO_CONTEXT}
         - source ${globals.PATH_TO_VIRTUAL_ENV}/bin/activate
         - python ./manage.py migrate
+    # populateDB:
+    #   cmd [cp]:
+    #     - cd ${globals.PATH_TO_CONTEXT}
+    #     - source ${globals.PATH_TO_VIRTUAL_ENV}/bin/activate
+    #     - python ./manage.py populatedb --createsuperuser
     setupWsgi:
       - upload:
           - sourcePath: ${baseUrl}/apis/saleor-api/config/wsgi.py
