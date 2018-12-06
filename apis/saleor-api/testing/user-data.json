@@ -1,0 +1,24 @@
+{
+  "users": [
+    {
+      "email": "michael.smith@example.com",
+      "password": "H7V6WfOgnkDf68BAR4MN"
+    },
+    {
+      "email": "theresa.lee@example.com",
+      "password": "p0u4SaMiSeY7AqVPrq7Q"
+    },
+    {
+      "email": "joseph.love@example.com",
+      "password": "6zlIH8pylyUJBNXtgRYg"
+    },
+    {
+      "email": "corey.holt@example.com",
+      "password": "zY2K3aAQQNiblE4sxWHq"
+    },
+    {
+      "email": "lori.tucker@example.com",
+      "password": "ceOC6T5efnWRQqdequpN"
+    }
+  ]
+}

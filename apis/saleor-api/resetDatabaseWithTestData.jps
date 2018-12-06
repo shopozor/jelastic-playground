@@ -12,7 +12,6 @@ application:
     PATH_TO_CONTEXT: ${globals.HOME}/${globals.CONTEXT}
     PYTHON_VIRTUAL_ENV: env
     PATH_TO_VIRTUAL_ENV: ${globals.HOME}/${globals.PYTHON_VIRTUAL_ENV}
-    TEST_DATA_FILENAME: test-data.json
 
   settings:
     fields:
@@ -75,5 +74,7 @@ application:
       cmd [cp]:
         - cd ${globals.PATH_TO_CONTEXT}
         - source ${globals.PATH_TO_VIRTUAL_ENV}/bin/activate
-        - wget ${baseUrl}/apis/saleor-api/config/${globals.TEST_DATA_FILENAME}
-        - python ./manage.py loaddata ${globals.TEST_DATA_FILENAME}
+        - rm -f loadUserData.py user-data.json
+        - wget ${baseUrl}/apis/saleor-api/testing/loadUserData.py
+        - wget ${baseUrl}/apis/saleor-api/testing/user-data.json
+        - cat loadUserData.py | python ./manage.py shell
