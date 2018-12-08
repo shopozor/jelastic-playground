@@ -20,5 +20,9 @@
       "email": "lori.tucker@example.com",
       "password": "ceOC6T5efnWRQqdequpN"
     }
-  ]
+  ],
+  "invalidUser": {
+    "email": "test@test.com",
+    "password": "password"
+  }
 }
