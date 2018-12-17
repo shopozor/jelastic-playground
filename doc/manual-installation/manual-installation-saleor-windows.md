@@ -63,6 +63,46 @@ source ./saleor-env/Scripts/activate
 
 3. Create database `saleor` with owner `saleor` user by means of the pgAdmin interface.
 
+## Enable CORS
+
+Following the advice found [here](https://github.com/ottoyiu/django-cors-headers/#configuration):
+
+1. Install Django CORS headers:
+
+```
+cd path-to-saleor
+source ./saleor-env/Scripts/activate
+pip install django-cors-headers
+```
+
+2. Add `corsheaders` to the `INSTALLED_APPS`
+
+```
+INSTALLED_APPS = (
+    ...
+    'corsheaders',
+    ...
+)
+```
+
+3. Add CORS middleware to the top of saleor's middleware list:
+
+```
+MIDDLEWARE = [
+  'corsheaders.middleware.CorsMiddleware',
+  'django.middleware.common.CommonMiddleware',
+  'django.contrib.sessions.middleware.SessionMiddleware',
+  'django.middleware.security.SecurityMiddleware',
+  'django.middleware.common.CommonMiddleware',
+  ...
+]
+```
+
+4. Finally, either define the following environment variable's value to `true` or set it directly in the `settings.py` file:
+
+```
+CORS_ORIGIN_ALLOW_ALL = True
+```
 
 ## Run saleor development server
 
@@ -70,6 +110,7 @@ source ./saleor-env/Scripts/activate
 
 ```
 cd path-to-saleor
+source ./saleor-env/Scripts/activate
 pip install -r requirements.txt
 ```
 
@@ -94,3 +135,11 @@ cd path-to-saleor
 source ./saleor-env/Scripts/activate
 python manage.py runserver
 ```
+
+5. Make sure that the clients using the `graphql` endpoint refer to 
+
+```
+http://localhost/graphql/
+```
+
+i.e. they are including the trailing slash.
