@@ -1,5 +1,15 @@
 {
+  "consumers": [
+    {
+      "email": "consommateur@budzons.ch",
+      "password": "Budzonnerie1"
+    }
+  ],
   "producers": [
+    {
+      "email": "producteur@budzons.ch",
+      "password": "Budzonnerie1"
+    },
     {
       "email": "michael.smith@example.com",
       "password": "H7V6WfOgnkDf68BAR4MN"
@@ -19,6 +29,24 @@
     {
       "email": "lori.tucker@example.com",
       "password": "ceOC6T5efnWRQqdequpN"
+    }
+  ],
+  "managers": [
+    {
+      "email": "responsable@budzons.ch",
+      "password": "Budzonnerie1"
+    }
+  ],
+  "rex": [
+    {
+      "email": "rex@budzons.ch",
+      "password": "Budzonnerie1"
+    }
+  ],
+  "softozor": [
+    {
+      "email": "softozor@budzons.ch",
+      "password": "Budzonnerie1"
     }
   ],
   "invalidUser": {
