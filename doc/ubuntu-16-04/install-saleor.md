@@ -41,7 +41,9 @@ sudo -u postgres createdb -O saleor -e saleor
 ```
 
 ## Installing Python 3.6
+
 See https://askubuntu.com/questions/865554/how-do-i-install-python-3-6-using-apt-get
+
 ```{bash}
 sudo add-apt-repository ppa:jonathonf/python-3.6
 sudo apt update
@@ -66,12 +68,11 @@ sudo apt install build-essential python3-venv python3-dev python3-pip python3-cf
 pip3 install pipenv
 ```
 
-2. Clone our forked saleor repository:
+3. Clone our forked saleor repository:
 
 ```
 git clone https://github.com/softozor/saleor.git
 ```
-
 
 4. Install saleor requirements and let `pipenv` automaticaly create a virtualenv
 ```
@@ -84,20 +85,19 @@ pipenv install
 pipenv shell
 ```
 
-
-5. Add secret key to `$VIRTUAL_ENV/bin/postactivate` script (cf. [this answer](https://stackoverflow.com/questions/9554087/setting-an-environment-variable-in-virtualenv)):
+6. Add secret key to `$VIRTUAL_ENV/bin/postactivate` script (cf. [this answer](https://stackoverflow.com/questions/9554087/setting-an-environment-variable-in-virtualenv)):
 
 ```
 export SECRET_KEY=theSecretKey
 ```
 
-6. Prepare the database
+7. Prepare the database
 
 ```
 ./manage.py migrate
 ```
 
-7. Install frontend
+8. Install frontend
 
 ```
 npm i
@@ -105,7 +105,7 @@ npm run build-assets
 npm run build-emails
 ```
 
-8. Run the development server:
+9. Run the development server:
 
 ```
 ./manage.py runserver
