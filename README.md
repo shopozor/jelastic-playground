@@ -1,13 +1,11 @@
 # General Shopozor installation manual
 
-## Local installation in a virtual machine
+## Local installation
 
-- [Development installation of vue-storefront in a virtual machine](/doc/vm/vm-installation.md)
-- [Development installation of saleor in a virtual machine](/doc/vm/vm-installation-saleor.md)
-
-## Local installation under Windows
-
-- [Development installation of saleor](/doc/manual-installation/manual-installation-saleor-windows.md)
+- [Development installation of vue-storefront on an Ubuntu 18.04 virtual machine](/doc/vm/vm-installation.md)
+- [Development installation of saleor on an Ubuntu 18.04 virtual machine](/doc/vm/vm-installation-saleor.md)
+- [Development installation of saleor under Windows 10](/doc/manual-installation/manual-installation-saleor-windows.md)
+- [Development installation of saleor under Ubuntu 16.04](/doc/manual-installation/manual-installation-saleor-ubuntu-16.04.md)
 
 ## Jelastic installation
 
