@@ -8,7 +8,7 @@
 deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 sudo apt update
-sudo apt install postgresql-10 postgresql-client-10 postgresql-client-common
+sudo apt install postgresql-10 postgresql-client-10 postgresql-client-common pgadmin4
 ```
 
 You can follow [this advice](https://www.pontikis.net/blog/package-management-system-update-ubuntu-desktop) if you experience trouble with the `deb` command above. Under WSL, you will need to start the server [like this](https://medium.com/@stephanedmonson/solution-for-connecting-postgresql-via-wsl-windows-subsystem-for-linux-ubuntu18-c79940fa5742):
