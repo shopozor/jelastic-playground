@@ -11,7 +11,11 @@ sudo apt update
 sudo apt install postgresql-10 postgresql-client-10 postgresql-client-common
 ```
 
-You can follow [this advice](https://www.pontikis.net/blog/package-management-system-update-ubuntu-desktop) if you experience trouble with the `deb` command above.
+You can follow [this advice](https://www.pontikis.net/blog/package-management-system-update-ubuntu-desktop) if you experience trouble with the `deb` command above. Under WSL, you will need to start the server [like this](https://medium.com/@stephanedmonson/solution-for-connecting-postgresql-via-wsl-windows-subsystem-for-linux-ubuntu18-c79940fa5742):
+
+```
+sudo /etc/init.d/postgresql start
+```
 
 2. Define a password for the postgres user, following [this answer](https://serverfault.com/questions/110154/whats-the-default-superuser-username-password-for-postgres-after-a-new-install):
 
