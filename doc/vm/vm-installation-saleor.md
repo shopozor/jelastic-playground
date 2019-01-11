@@ -11,6 +11,8 @@ sudo apt update
 sudo apt install postgresql-10 postgresql-client-10 postgresql-client-common
 ```
 
+You can follow [this advice](https://www.pontikis.net/blog/package-management-system-update-ubuntu-desktop) if you experience trouble with the `deb` command above.
+
 2. Define a password for the postgres user, following [this answer](https://serverfault.com/questions/110154/whats-the-default-superuser-username-password-for-postgres-after-a-new-install):
 
 ```
