@@ -1,6 +1,6 @@
 # Running the unit tests and saleor own tests
 
-In order to run the tests, you don't need `saleor`'s server running. You need a populated database, which you get with the following commands [*TODO: double-check again if this is really necessary*]:
+In order to run the tests, you don't need `saleor`'s server running. You need a populated database, which you get with the following commands [**TODO: double-check again if this is really necessary**]:
 
 ```
 cd path-to-saleor
