@@ -20,4 +20,12 @@ export DJANGO_SETTINGS_MODULE=shopozor_features.settings
 python manage.py behave
 ```
 
+Would you want to preserve the same database from one run of behave to the other, you could launch it this way:
+
+```
+python manage.py behave --keepdb
+```
+
+This doesn't create a new database each time you run the acceptance tests which can be handy during acceptance tests development.
+
 You can fine-tune `behave`'s parameters in the `setup.cfg` configuration file.
