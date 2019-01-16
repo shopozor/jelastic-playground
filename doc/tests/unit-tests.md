@@ -3,8 +3,6 @@
 In order to run the tests, you don't need `saleor`'s server running. You need a populated database, which you get with the following commands [*TODO: double-check again if this is really necessary*]:
 
 ```
-cd path-to-saleor
-source ./saleor-env/Scripts/activate
 python manage.py populatedb
 ```
 
@@ -35,7 +33,5 @@ DJANGO_SETTINGS_MODULE = shopozor-tests.settings
 Finally, run
 
 ```
-cd path-to-saleor
-source ./saleor-env/Scripts/activate
 py.test -ra
 ```
