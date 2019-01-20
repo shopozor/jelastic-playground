@@ -17,7 +17,7 @@ You indeed need to import your settings and add the path to them to the `testpat
 ```
 [tool:pytest]
 addopts = -n auto --vcr-record-mode=none --cov --cov-report=
-testpaths = shopozor-tests tests saleor
+testpaths = shopozor.tests tests saleor
 filterwarnings =
     ignore::DeprecationWarning
     ignore::PendingDeprecationWarning
@@ -28,7 +28,7 @@ From our experience, setting the `DJANGO_SETTINGS_MODULE` variable in that confi
 Finally, run
 
 ```
-export DJANGO_SETTINGS_MODULE=shopozor-tests.settings
+export DJANGO_SETTINGS_MODULE=shopozor.tests.settings
 py.test -ra
 ```
 
