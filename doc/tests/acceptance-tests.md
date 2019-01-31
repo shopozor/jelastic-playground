@@ -1,9 +1,9 @@
 # Running the Shopozor server's acceptance tests
 
-1. Install the `shopozor_features` requirements
+1. Install the `shopozor` requirements
 
 ```
-pip install shopozor_features/requirements.txt
+pip install shopozor/requirements.txt
 ```
 
 This will install `behave` and `behave-django` (documented [here](https://github.com/behave)) among other things.
@@ -11,7 +11,7 @@ This will install `behave` and `behave-django` (documented [here](https://github
 2. Set the following environment variable
 
 ```
-export DJANGO_SETTINGS_MODULE=shopozor_features.settings
+export DJANGO_SETTINGS_MODULE=features.settings
 ```
 
 3. Run the tests
