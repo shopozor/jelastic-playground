@@ -61,7 +61,7 @@ As explained on `saleor`'s [Windows installation guidelines](https://saleor.read
 
 ## Install PostgreSQL
 
-1. Install the [latest PostgreSQL version for Windows](https://www.postgresql.org/download/windows/). This will then start PostgreSQL as a service.
+1. Install the [latest PostgreSQL version for Windows](https://www.postgresql.org/download/windows/). This will then start PostgreSQL as a service. It can be that running the installer results in failing to install Visual Studio runtime distributables, in which case you run the installer in the command-line as an administrator with the option `--install_runtimes 0`, as advised [here](https://stackoverflow.com/questions/4288303/cant-install-postgresql-an-error-occurred-executing-the-microsoft-vc-runtime).
 
 2. Create user `saleor` with password `saleor` and super user privileges by means of the pgAdmin interface.
 
