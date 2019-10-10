@@ -1,0 +1,31 @@
+jpsVersion: 1.3
+jpsType: update
+application:
+  id: mount-remote-folder
+  name: Mount remote folder
+  version: 0.0
+
+  # Call that on a frontend and set a backend cp node id as the source node id
+
+  settings:
+    fields:
+      - name: sourceNodeId
+        caption: Source Node Id
+        type: string
+        required: true
+      
+
+  onInstall:
+    - mountRemoteFolder
+
+  actions:
+    mountRemoteFolder:
+      - api:
+        - method: jelastic.environment.file.AddMountPointByGroup
+          params:
+            # target: where we mount the folder
+            nodeGroup: cp
+            path: /home/node/emails
+            # source: the env we mount the folder from
+            sourceNodeId: ${settings.sourceNodeId}
+            sourcePath: /app/emails
