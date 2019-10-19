@@ -39,10 +39,10 @@ application:
           replacements:
             - pattern: \#USERLOCATIONS
               replacement: "location /mailhog { 
-                  proxy_pass http://${nodes.mail-server.intIP}:8025/; proxy_http_version 1.1; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection \"upgrade\"; 
+                  proxy_pass http://${nodes.mail-server.intIP}:8025/;
                 }
                 location /mailhog/api { 
-                  proxy_pass http://${nodes.mail-server.intIP}:8025/api; proxy_http_version 1.1; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection \"upgrade\"; 
+                  proxy_pass http://${nodes.mail-server.intIP}:8025/api;
                 }
                 location /css { 
                   proxy_pass http://${nodes.mail-server.intIP}:8025; 
