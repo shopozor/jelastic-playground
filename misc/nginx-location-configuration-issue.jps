@@ -38,7 +38,12 @@ application:
           path: /etc/nginx/nginx-jelastic.conf
           replacements:
             - pattern: \#USERLOCATIONS
-              replacement: "location /mailhog { proxy_pass http://${nodes.mail-server.intIP}:8025; proxy_http_version 1.1; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection \"upgrade\"; }"
+              replacement: "location /mailhog { proxy_pass http://${nodes.mail-server.intIP}:8025/; proxy_http_version 1.1; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection \"upgrade\"; }
+              location /mailhog/api { proxy_pass http://${nodes.mail-server.intIP}:8025/api; proxy_http_version 1.1; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection \"upgrade\"; }
+              location /css { proxy_pass http://${nodes.mail-server.intIP}:8025; }
+              location /js { proxy_pass http://${nodes.mail-server.intIP}:8025; }
+              location /images { proxy_pass http://${nodes.mail-server.intIP}:8025; }"
+
         nodeType: nginx-dockerized
       - restartNodes:
         - nodeGroup: nginx-dockerized
