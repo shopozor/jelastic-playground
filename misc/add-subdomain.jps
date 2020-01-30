@@ -1,0 +1,14 @@
+jpsVersion: 1.3
+jpsType: update
+application:
+  id: add-subdomain
+  name: Add subdomain
+  version: 0.0
+
+  onInstall:
+    - enableSubDomain
+
+  actions:
+    enableSubDomain:
+      - jelastic.env.binder.AddDomains[cp]:
+          domains: chartmuseum-jx
